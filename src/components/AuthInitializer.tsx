@@ -23,20 +23,27 @@ export const AuthInitializer = ({ children }: AuthInitializerProps) => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Handle redirect when there's an auth error
+  useEffect(() => {
+    if (isInitialized && error && !user) {
+      router.push('/login');
+    }
+  }, [isInitialized, error, user, router]);
+
+  // Handle redirect when there's no user and not on auth pages
+  useEffect(() => {
+    if (isInitialized && !user && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
+      router.push('/login');
+    }
+  }, [isInitialized, user, router]);
+
   // Se ainda está carregando ou não foi inicializado, mostrar loader
   if (loading || !isInitialized) {
     return <Loader />;
   }
 
-  // Se há erro de autenticação, redirecionar para login
-  if (error && !user) {
-    router.push('/login');
-    return <Loader />;
-  }
-
-  // Se não há usuário e não está em uma rota de autenticação, redirecionar para login
-  if (!user && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
-    router.push('/login');
+  // If we're redirecting, show loader
+  if ((error && !user) || (!user && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup'))) {
     return <Loader />;
   }
 
