@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -321,18 +319,22 @@ export default function CalendarPage() {
   );
   
   const GeneralItem = ({ event }: { event: CombinedEvent }) => (
-    <div className="flex items-center gap-4 p-4 rounded-lg bg-secondary/50 border border-secondary">
-        <Icon name={event.icon} className="h-6 w-6 text-primary" />
+    <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-muted hover:bg-accent transition-all duration-200">
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Icon name={event.icon} className="h-6 w-6 text-primary" />
+        </div>
         <div className="flex-1">
             <p className="font-semibold">
-                {event.completed ? <del>{event.title} (Completed)</del> : event.title}
+                {event.completed ? <del className="text-muted-foreground">{event.title}</del> : event.title}
             </p>
             {event.time && <Badge variant="outline" className="mt-1 capitalize">{event.time}</Badge>}
         </div>
         <Badge variant={
           event.type === 'habit' ? 'default' : 
           event.type === 'task' ? 'secondary' : 'success'
-        }>{event.type}</Badge>
+        } className="capitalize">
+          {event.type}
+        </Badge>
     </div>
   )
 
@@ -352,12 +354,12 @@ export default function CalendarPage() {
                 months: 'flex-1 flex flex-col',
                 month: 'h-full flex flex-col',
                 table: 'h-full w-full border-collapse flex flex-col',
-                head_row: 'flex justify-around',
-                head_cell: 'w-full text-muted-foreground text-sm font-normal pb-2',
-                row: 'flex w-full justify-around mt-1 flex-1',
-                cell: 'w-full text-center text-sm p-0 relative',
-                day: 'w-full h-12 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground flex flex-col items-center justify-center gap-1',
-                day_today: 'bg-secondary font-bold text-secondary-foreground',
+                head_row: 'flex w-full',
+                head_cell: 'text-muted-foreground w-full font-normal text-sm py-2 text-center flex-1',
+                row: 'flex w-full',
+                cell: 'w-full text-center text-sm p-0 relative flex-1 flex items-center justify-center',
+                day: 'w-full h-12 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground flex items-center justify-center',
+                day_today: 'bg-secondary font-bold text-secondary-foreground border-2 border-secondary',
                 day_disabled: 'text-muted-foreground/50',
                 }}
                 modifiers={{
@@ -365,8 +367,8 @@ export default function CalendarPage() {
                     events: eventDays
                 }}
                 modifiersClassNames={{ 
-                    tasks: 'relative before:content-[""] before:absolute before:bottom-1.5 before:left-1/2 before:-translate-x-1/2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-primary',
-                    events: 'relative before:content-[""] before:absolute before:bottom-1.5 before:left-1/2 before:-translate-x-1/2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-success'
+                    tasks: 'relative before:content-[""] before:absolute before:bottom-1.5 before:left-1/2 before:-translate-x-1/2 before:h-2 before:w-2 before:rounded-full before:bg-primary',
+                    events: 'relative before:content-[""] before:absolute before:bottom-1.5 before:left-1/2 before:-translate-x-1/2 before:h-2 before:w-2 before:rounded-full before:bg-success'
                 }}
             />
           </Card>
@@ -374,9 +376,9 @@ export default function CalendarPage() {
           <Card className="shadow-lg w-full">
               <CardHeader className="pb-3">
                   <CardTitle className="text-lg truncate">
-                      {date ? format(date, 'EEEE, d MMMM') : 'Select a day'}
+                      {date ? format(date, 'EEEE, MMMM d') : 'Select a day'}
                   </CardTitle>
-                  <p className="text-muted-foreground pt-1 text-sm">
+                  <p className="text-muted-foreground pt-1">
                       {activeFilters.length === 3 
                         ? `${selectedDayEvents.length} item(s) scheduled`
                         : `${selectedDayEvents.length} filtered item(s)`
@@ -385,7 +387,7 @@ export default function CalendarPage() {
               </CardHeader>
               <CardContent className="w-full">
                   <FilterControls />
-                  <div className="space-y-3 w-full">
+                  <div className="space-y-3 w-full mt-4">
                       {selectedDayEvents.length > 0 ? (
                           selectedDayEvents.map((event, index) => (
                               <GeneralItem key={index} event={event} />
@@ -393,11 +395,11 @@ export default function CalendarPage() {
                       ) : (
                           <div className="text-center text-muted-foreground py-8">
                               {activeFilters.length === 3 ? (
-                                  <p>No items for this day.</p>
+                                  <p className="text-lg">No items for this day.</p>
                               ) : (
                                   <div className="space-y-2">
-                                      <p>No {activeFilters.join(' or ')} for this day.</p>
-                                      <p className="text-xs opacity-70">Try adjusting your filters above.</p>
+                                      <p className="text-lg">No {activeFilters.join(' or ')} for this day.</p>
+                                      <p className="text-sm opacity-70">Try adjusting your filters above.</p>
                                   </div>
                               )}
                           </div>
@@ -408,46 +410,57 @@ export default function CalendarPage() {
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6 w-full h-[calc(100vh-12rem)]">
+        <div className="hidden md:grid md:grid-cols-3 gap-6 w-full min-h-[calc(100vh-8rem)]">
           <div className="md:col-span-2 w-full min-w-0">
-              <Card className="shadow-lg p-6 w-full h-full">
-              <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  className="p-0 w-full h-full"
-                  classNames={{
-                  root: 'w-full h-full',
-                  months: 'flex-1 flex flex-col h-full',
-                  month: 'h-full flex flex-col',
-                  table: 'h-full w-full border-collapse flex flex-col flex-1',
-                  head_row: 'flex justify-around',
-                  head_cell: 'w-full text-muted-foreground text-sm font-normal pb-2',
-                  row: 'flex w-full justify-around mt-1 flex-1',
-                  cell: 'w-full text-center text-sm p-0 relative',
-                  day: 'w-full h-full rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground flex flex-col items-center justify-center gap-1',
-                  day_today: 'bg-secondary font-bold text-secondary-foreground',
-                  day_disabled: 'text-muted-foreground/50',
-                  }}
-                  modifiers={{
-                      tasks: taskDays,
-                      events: eventDays
-                  }}
-                  modifiersClassNames={{ 
-                      tasks: 'relative before:content-[""] before:absolute before:bottom-1.5 before:left-1/2 before:-translate-x-1/2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-primary',
-                      events: 'relative before:content-[""] before:absolute before:bottom-1.5 before:left-1/2 before:-translate-x-1/2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-success'
-                  }}
-              />
+              <Card className="shadow-lg p-6 w-full h-full flex flex-col">
+                <div className="flex-1 flex flex-col">
+                  <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      className="p-0 w-full h-full"
+                      classNames={{
+                      root: 'w-full h-full flex flex-col',
+                      months: 'flex-1 flex flex-col h-full',
+                      month: 'h-full flex flex-col',
+                      caption: 'flex justify-center pt-1 relative items-center',
+                      caption_label: 'text-xl font-bold',
+                      nav: 'space-x-1 flex items-center',
+                      nav_button: 'h-8 w-8 bg-transparent p-0 opacity-70 hover:opacity-100 rounded-md hover:bg-accent',
+                      nav_button_previous: 'absolute left-1',
+                      nav_button_next: 'absolute right-1',
+                      table: 'w-full border-collapse space-y-1 flex-1 mt-6',
+                      head_row: 'flex w-full justify-between',
+                      head_cell: 'text-muted-foreground rounded-md w-full font-semibold text-sm flex-1 text-center py-2',
+                      row: 'flex w-full',
+                      cell: 'h-12 w-full text-center text-sm p-0 relative flex-1 flex items-center justify-center',
+                      day: 'h-12 w-12 p-0 font-normal aria-selected:opacity-100 rounded-full transition-all duration-200 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground aria-selected:bg-primary aria-selected:text-primary-foreground aria-selected:font-semibold aria-selected:scale-105 mx-auto',
+                      day_today: 'bg-secondary font-bold text-secondary-foreground border-2 border-secondary',
+                      day_disabled: 'text-muted-foreground/50',
+                      day_range_end: 'day-range-end',
+                      day_selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground shadow-lg',
+                      day_outside: 'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
+                      }}
+                      modifiers={{
+                          tasks: taskDays,
+                          events: eventDays
+                      }}
+                      modifiersClassNames={{ 
+                          tasks: 'relative before:content-[""] before:absolute before:bottom-2 before:left-1/2 before:-translate-x-1/2 before:h-2.5 before:w-2.5 before:rounded-full before:bg-primary',
+                          events: 'relative before:content-[""] before:absolute before:bottom-2 before:left-1/2 before:-translate-x-1/2 before:h-2.5 before:w-2.5 before:rounded-full before:bg-success'
+                      }}
+                  />
+                </div>
               </Card>
           </div>
 
           <div className="md:col-span-1 w-full min-w-0 flex flex-col">
               <Card className="shadow-lg w-full flex-1 flex flex-col">
-                  <CardHeader className="pb-2 flex-shrink-0">
-                      <CardTitle className="text-xl truncate">
-                          {date ? format(date, 'EEEE, d MMMM') : 'Select a day'}
+                  <CardHeader className="pb-3 flex-shrink-0">
+                      <CardTitle className="text-2xl truncate">
+                          {date ? format(date, 'EEEE, MMMM d') : 'Select a day'}
                       </CardTitle>
-                      <p className="text-muted-foreground pt-1 text-sm">
+                      <p className="text-muted-foreground pt-1">
                           {activeFilters.length === 3 
                             ? `${selectedDayEvents.length} item(s) scheduled`
                             : `${selectedDayEvents.length} filtered item(s)`
@@ -456,20 +469,20 @@ export default function CalendarPage() {
                   </CardHeader>
                   <CardContent className="w-full flex-1 flex flex-col overflow-hidden">
                       <FilterControls />
-                      <div className="flex-1 overflow-y-auto">
-                          <div className="space-y-3 w-full pr-2">
+                      <div className="flex-1 overflow-y-auto mt-4">
+                          <div className="space-y-4 w-full pr-2">
                               {selectedDayEvents.length > 0 ? (
                                   selectedDayEvents.map((event, index) => (
                                       <GeneralItem key={index} event={event} />
                                   ))
                               ) : (
-                                  <div className="text-center text-muted-foreground py-8">
+                                  <div className="text-center text-muted-foreground py-12">
                                       {activeFilters.length === 3 ? (
-                                          <p>No items for this day.</p>
+                                          <p className="text-lg">No items for this day.</p>
                                       ) : (
-                                          <div className="space-y-2">
-                                              <p>No {activeFilters.join(' or ')} for this day.</p>
-                                              <p className="text-xs opacity-70">Try adjusting your filters above.</p>
+                                          <div className="space-y-3">
+                                              <p className="text-lg">No {activeFilters.join(' or ')} for this day.</p>
+                                              <p className="text-sm opacity-70">Try adjusting your filters above.</p>
                                           </div>
                                       )}
                                   </div>
