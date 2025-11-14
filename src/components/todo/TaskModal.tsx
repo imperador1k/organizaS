@@ -19,11 +19,12 @@ import { Textarea } from '../ui/textarea';
 import { UseFormReturn } from 'react-hook-form';
 
 const taskCategories = [
-  { value: 'work', label: 'Work', color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { value: 'personal', label: 'Personal', color: 'text-green-600', bgColor: 'bg-green-50' },
-  { value: 'wishlist', label: 'Wishlist', color: 'text-purple-600', bgColor: 'bg-purple-50' },
-  { value: 'birthday', label: 'Birthday', color: 'text-pink-600', bgColor: 'bg-pink-50' },
-  { value: 'other', label: 'Other', color: 'text-gray-600', bgColor: 'bg-gray-50' },
+  { value: 'work', label: 'Work', color: 'text-blue-600', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
+  { value: 'personal', label: 'Personal', color: 'text-green-600', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/20' },
+  { value: 'wishlist', label: 'Wishlist', color: 'text-purple-600', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/20' },
+  { value: 'birthday', label: 'Birthday', color: 'text-pink-600', bgColor: 'bg-pink-500/10', borderColor: 'border-pink-500/20' },
+  { value: 'escola', label: 'Escola', color: 'text-indigo-600', bgColor: 'bg-indigo-500/10', borderColor: 'border-indigo-500/20' },
+  { value: 'other', label: 'Other', color: 'text-gray-600', bgColor: 'bg-gray-500/10', borderColor: 'border-gray-500/20' },
 ] as const;
 
 type TaskModalProps = {
@@ -184,8 +185,9 @@ export function TaskModal({ form, isModalOpen, setIsModalOpen, onTaskSubmit, edi
                         {taskCategories.map((category) => (
                           <SelectItem key={category.value} value={category.value}>
                             <div className="flex items-center gap-2">
-                              <div className={cn("w-2 h-2 rounded-full", category.bgColor)} />
-                              <span>{category.label}</span>
+                              <div className={cn("text-xs px-2 py-0.5 rounded-full border", category.bgColor, category.borderColor, category.color)}>
+                                {category.label}
+                              </div>
                             </div>
                           </SelectItem>
                         ))}

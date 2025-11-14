@@ -19,9 +19,18 @@ import { subDays, isToday, isYesterday, isWithinInterval, isAfter, startOfDay, f
 import { useAppData } from "@/context/AppDataContext";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-
+import { cn } from "@/lib/utils";
 
 type TaskWithDetails = Task & { description?: string, notes?: string };
+
+const taskCategories = [
+  { value: 'work', label: 'Work', color: 'text-blue-600', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
+  { value: 'personal', label: 'Personal', color: 'text-green-600', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/20' },
+  { value: 'wishlist', label: 'Wishlist', color: 'text-purple-600', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/20' },
+  { value: 'birthday', label: 'Birthday', color: 'text-pink-600', bgColor: 'bg-pink-500/10', borderColor: 'border-pink-500/20' },
+  { value: 'escola', label: 'Escola', color: 'text-indigo-600', bgColor: 'bg-indigo-500/10', borderColor: 'border-indigo-500/20' },
+  { value: 'other', label: 'Other', color: 'text-gray-600', bgColor: 'bg-gray-500/10', borderColor: 'border-gray-500/20' },
+] as const;
 
 const filterOptions = [
     { value: 'all', label: 'All Time' },
@@ -121,7 +130,14 @@ export default function ToDoPage() {
     }
   });
 
-  const TaskCard = ({task, source}: {task: TaskWithDetails, source: 'today' | 'upcoming'}) => (
+  const getCategoryInfo = (category: string) => {
+    return taskCategories.find(cat => cat.value === category) || taskCategories[5]; // default to 'other'
+  };
+
+  const TaskCard = ({task, source}: {task: TaskWithDetails, source: 'today' | 'upcoming'}) => {
+    const categoryInfo = getCategoryInfo(task.category);
+
+    return (
      <Dialog key={task.id}>
         <div className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-secondary/60 transition-colors group">
             <div className="flex items-center gap-4 pt-1">
@@ -136,9 +152,14 @@ export default function ToDoPage() {
             </div>
             <DialogTrigger asChild>
                 <div className="grid gap-1.5 flex-1 cursor-pointer">
-                    <label className="font-semibold cursor-pointer">
-                    {task.title}
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <label className="font-semibold cursor-pointer">
+                        {task.title}
+                      </label>
+                      <div className={cn("text-xs px-2 py-0.5 rounded-full border", categoryInfo.bgColor, categoryInfo.borderColor, categoryInfo.color)}>
+                        {categoryInfo.label}
+                      </div>
+                    </div>
                     {task.description && <p className="text-sm text-muted-foreground">{task.description}</p>}
                 </div>
             </DialogTrigger>
@@ -233,7 +254,7 @@ export default function ToDoPage() {
         </DialogContent>
     </Dialog>
   );
-
+  }
 
   return (
     <AppLayout>
@@ -277,43 +298,51 @@ export default function ToDoPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {filteredCompletedTasks.map(task => (
-                <div key={task.id} className="flex items-start gap-4 p-4 rounded-lg border bg-card/50">
-                  <CheckCircle className="mt-1 h-5 w-5 text-success" />
-                  <div className="grid gap-1.5 flex-1">
-                    <span className="font-semibold line-through text-muted-foreground">
-                      {task.title}
-                    </span>
-                    {task.description && <p className="text-sm text-muted-foreground/80">{task.description}</p>}
-                    {task.completionDate && <p className="text-xs text-muted-foreground/60">Completed on: {new Date(task.completionDate).toLocaleDateString()}</p>}
+              {filteredCompletedTasks.map(task => {
+                const categoryInfo = getCategoryInfo(task.category);
+                return (
+                  <div key={task.id} className="flex items-start gap-4 p-4 rounded-lg border bg-card/50">
+                    <CheckCircle className="mt-1 h-5 w-5 text-success" />
+                    <div className="grid gap-1.5 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold line-through text-muted-foreground">
+                          {task.title}
+                        </span>
+                        <div className={cn("text-xs px-2 py-0.5 rounded-full border", categoryInfo.bgColor, categoryInfo.borderColor, categoryInfo.color)}>
+                          {categoryInfo.label}
+                        </div>
+                      </div>
+                      {task.description && <p className="text-sm text-muted-foreground/80">{task.description}</p>}
+                      {task.completionDate && <p className="text-xs text-muted-foreground/60">Completed on: {new Date(task.completionDate).toLocaleDateString()}</p>}
+                    </div>
+                     <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => handleTaskReversion(task)}>
+                          <Undo2 className="h-4 w-4" />
+                          <span className="sr-only">Revert task</span>
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure you want to delete this task?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the task "{task.title}".
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(task.id!)}>Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                   </div>
-                   <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => handleTaskReversion(task)}>
-                        <Undo2 className="h-4 w-4" />
-                        <span className="sr-only">Revert task</span>
-                      </Button>
-                      <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                                  <Trash2 className="h-4 w-4" />
-                              </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                              <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you sure you want to delete this task?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                      This action cannot be undone. This will permanently delete the task "{task.title}".
-                                  </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDelete(task.id!)}>Delete</AlertDialogAction>
-                              </AlertDialogFooter>
-                          </AlertDialogContent>
-                      </AlertDialog>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               {filteredCompletedTasks.length === 0 && (
                 <p className="text-center text-muted-foreground py-8">No completed tasks match this filter.</p>
               )}

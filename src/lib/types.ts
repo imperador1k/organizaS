@@ -1,5 +1,3 @@
-
-
 import { z } from 'zod';
 
 export type Day = 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa' | 'Su';
@@ -39,7 +37,7 @@ export const TaskSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, { message: "Title is required." }),
   description: z.string().optional(),
-  category: z.enum(["work", "personal", "wishlist", "birthday", "other"]),
+  category: z.enum(["work", "personal", "wishlist", "birthday", "escola", "other"]),
   dueDate: z.date({ required_error: "Due date is required."}),
   time: z.string().optional(), // Added for scheduling (start time)
   endTime: z.string().optional(), // End time for scheduled tasks
