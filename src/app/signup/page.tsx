@@ -50,7 +50,7 @@ export default function SignupPage() {
         toast({
           title: 'Account Created',
           description: rememberMe 
-            ? `Welcome, ${name}! You will stay logged in for 30 days.` 
+            ? `Welcome, ${name}! You will stay logged in for 180 days.` 
             : `Welcome, ${name}! You have been successfully signed up.`,
         });
         router.push('/');
@@ -145,7 +145,7 @@ export default function SignupPage() {
                         onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                     />
                     <Label htmlFor="remember-me" className="text-sm">
-                        Remember me for 30 days
+                        Remember me for 180 days
                     </Label>
                 </div>
                 

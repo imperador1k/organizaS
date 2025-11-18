@@ -1,13 +1,10 @@
-
-
-'use client';
-
 import React, { createContext, useContext, useState, ReactNode, useEffect, useMemo, useCallback } from 'react';
 import { Habit, Task, AppEvent, UserProfile, ScheduledItem, Break } from '@/lib/types';
 import { auth, db } from '@/lib/firebase';
 import { User, onAuthStateChanged, signOut, updateProfile as updateAuthProfile } from 'firebase/auth';
 import { usePersistentAuth } from '@/hooks/use-persistent-auth';
 import { useTokenRefresh } from '@/hooks/use-token-refresh';
+import { useSessionExtension } from '@/hooks/use-session-extension';
 import { 
   collection, 
   doc, 
@@ -118,6 +115,9 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
   
   // Usar o hook de renovação de tokens
   useTokenRefresh(user);
+  
+  // Usar o hook de extensão de sessão
+  useSessionExtension(user);
   
   const [habits, setHabits] = useState<Habit[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);

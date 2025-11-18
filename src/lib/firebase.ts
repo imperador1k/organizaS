@@ -22,7 +22,7 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase services
 const auth = initializeAuth(app, {
-  persistence: browserLocalPersistence
+  persistence: [browserLocalPersistence]
 });
 const db = getFirestore(app);
 const storage = getStorage(app);

@@ -31,7 +31,7 @@ export default function LoginPage() {
       if (result.success) {
         toast({
           title: 'Login Successful',
-          description: rememberMe ? 'Welcome back! You will stay logged in for 30 days.' : 'Welcome back!',
+          description: rememberMe ? 'Welcome back! You will stay logged in for 180 days.' : 'Welcome back!',
         });
         router.push('/');
       } else {
@@ -102,7 +102,7 @@ export default function LoginPage() {
                         onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                     />
                     <Label htmlFor="remember-me" className="text-sm">
-                        Remember me for 30 days
+                        Remember me for 180 days
                     </Label>
                 </div>
                 
