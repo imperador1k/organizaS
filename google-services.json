@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "36811670299",
+    "project_id": "organizas",
+    "storage_bucket": "organizas.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36811670299:android:f6b90cedb2468c80d2c9be",
+        "android_client_info": {
+          "package_name": "co.median.android.abbjmnn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "36811670299-au1b6118fd30dsepn0i45n53p4sb144e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfcRHlUdTqC8-AFTNoLPihEw62vYYjWNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "36811670299-au1b6118fd30dsepn0i45n53p4sb144e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

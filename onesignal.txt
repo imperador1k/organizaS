@@ -1,0 +1,128 @@
+Configuração de Notificações Push no Median
+
+O Median oferece integração nativa com o OneSignal como provedor de push padrão (gratuito e ilimitado)
+docs.median.co
+docs.median.co
+. Em resumo, o fluxo típico é: (a) criar/atualizar apps no Firebase (Android) e no Apple Developer (iOS); (b) configurar essas credenciais no OneSignal; e (c) informar o OneSignal App ID no painel do Median.
+
+Pré-requisitos: Crie uma conta grátis no OneSignal e defina um aplicativo para iOS e Android. No OneSignal Dashboard, configure:
+
+iOS (APNS): Gere um certificado (ou APNs Key) no Apple Developer e carregue no OneSignal
+docs.median.co
+. Certifique-se de adicionar a capability “Push Notifications” no seu Xcode project (selecione seu alvo e ative “Push Notifications” antes de compilar)
+docs.median.co
+docs.median.co
+. O Median pode incluir automaticamente essa capability para clientes full-service, mas se você for self-serve deve adicioná-la manualmente
+docs.median.co
+. (Também é recomendado configurar App Groups em seu app e extensão de notificação para permitir limpeza de badge, seguindo guia da OneSignal.)
+
+Android (FCM): Crie um projeto Firebase com o mesmo Package Name do seu app Median. Registre seu app Android no Firebase e baixe o arquivo google-services.json
+docs.median.co
+. No OneSignal, forneça a Service Account JSON do Firebase (acessando Google Cloud Console > IAM & Admin > Service Accounts, crie chave de conta de serviço com role “Cloud Messaging Service Agent” e baixe o JSON)
+docs.median.co
+. Em seguida, na App Studio do Median, vá em Build & Download > Google Services e importe tanto o google-services.json (Android) quanto o GoogleService-Info.plist (iOS) obtidos do Firebase
+docs.median.co
+docs.median.co
+. Esses passos asseguram que seu app tenha as credenciais Firebase necessárias.
+
+Configuração no Median App Studio: Na interface do Median, acesse as configurações do seu app:
+
+Vá em App Studio > App Configuration (ou Build & Download). Confirme o Bundle ID (iOS) e Package Name (Android) estão corretos – eles devem corresponder aos usados no Firebase/Apple Developer
+docs.median.co
+docs.median.co
+.
+
+Em Google Services (build settings), faça upload dos arquivos GoogleService-Info.plist e google-services.json obtidos
+docs.median.co
+docs.median.co
+. Isso associa seu app aos projetos Firebase para Android e iOS.
+
+Ative o provedor de Push (OneSignal) e insira o OneSignal App ID no campo correspondente. O App ID do OneSignal fica em Settings → Keys & IDs do Dashboard do OneSignal
+docs.median.co
+. (Basta esse ID – o Median não exige outros tokens no painel, pois o OneSignal gerencia o envio.)
+
+Envio de notificações: Com tudo configurado, usuários que instalarem seu app serão registrados no OneSignal automaticamente
+docs.median.co
+. Você pode então enviar push:
+
+Via Dashboard OneSignal: Use a interface online do OneSignal para compor e disparar notificações (para todos os usuários, segmentos ou usuários específicos).
+
+Programaticamente (backend): Opcionalmente, use a API REST do OneSignal para enviar mensagens por código. O OneSignal fornece endpoints HTTP onde você especifica app_id, alvo (segmentos, tags ou IDs de usuário) e conteúdo da notificação
+docs.median.co
+. Por exemplo, um trecho simplificado em Node/JavaScript seria:
+
+const response = await fetch('https://onesignal.com/api/v1/notifications', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Basic <ONE_SIGNAL_REST_API_KEY>',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    app_id: '<ONE_SIGNAL_APP_ID>',
+    included_segments: ['All'],  // ou use user_ids, tags, etc.
+    headings: { en: 'Título da notificação' },
+    contents: { en: 'Conteúdo da notificação' }
+  })
+});
+
+
+Atenção: nessa chamada é preciso incluir a REST API Key do OneSignal (Authorization). Essa chave deve ser guardada no servidor/ambiente seguro (não no código cliente). Veja a documentação oficial do OneSignal para detalhes da API
+docs.median.co
+.
+
+Restrições por plataforma:
+
+iOS: além da configuração acima, o app só recebe push se tiver a permissão do usuário. O Median pode exibir um “soft prompt” antes do sistema solicitar. Lembre que o envio só funciona após o usuário aceitar e você já configurou o certificado APNS. Em versões recentes do iOS (13+), recomenda-se solicitar consentimento de forma customizada usando o JavaScript Bridge do Median (ver guia de consentimento)
+docs.median.co
+.
+
+Android: o usuário também precisa autorizar o recebimento (permissa de notificação). Em geral, a Android já solicita automaticamente ou via median.onesignal.register(). Não há outras ações de configuração (além de seguir o fluxo Firebase já descrito)
+docs.median.co
+.
+
+Limitações: o envio de push depende da disponibilidade dos serviços APNS/FCM: o Apple Push requer conexão APNS ativa; o Firebase Messaging requer conectividade com Google Services. Além disso, notificações em background vs foreground podem requerer tratamento específico de payload no app (ex.: “data-only” no Android). Consulte a documentação da OneSignal sobre “Foreground Notifications” para detalhes.
+
+Envio Direto de Push a partir de React (sem Backend)
+
+Tecnicamente é possível que uma aplicação React (frontend) acione um envio de notificação, mas não há suporte nativo no Median para isso — o fluxo recomendado é sempre por servidor ou dashboards de provedores
+docs.median.co
+. Abaixo os pontos principais:
+
+API de Push requer credenciais seguras: Para enviar via OneSignal API ou FCM diretamente, seria necessário incluir chaves secretas (OneSignal REST API Key, FCM Server Key ou certificado APNS) no código JavaScript do cliente. Isso exporia essas credenciais, permitindo que qualquer usuário malicioso dispare notificações ou abuse de sua conta. Portanto, não se deve incluir essas chaves no código React executado no cliente.
+
+Possibilidade via chamadas HTTP: Em tese, um código React poderia fazer um fetch para os endpoints de push:
+
+OneSignal: chamar https://onesignal.com/api/v1/notifications com método POST incluindo o App ID e Authorization header (API Key).
+
+FCM: chamar https://fcm.googleapis.com/fcm/send com a chave do servidor.
+
+APNS: chamar https://api.push.apple.com/... com um JWT assinado.
+Porém, todas essas abordagens falham na prática: além do risco de chaves, a maioria das APIs não permite chamadas CORS diretas ou só aceita conexões de servidores.
+
+Limitações de segurança: Como observado, expor o OneSignal REST API Key ou FCM Server Key é extremamente arriscado. Além disso, navegadores frequentemente bloqueiam requisições diretas a essas APIs (CORS) quando originadas de uma página web. Assim, não é viável proteger as chaves nem garantir entrega estável sem um backend.
+
+Uso prático: Enviar push direto do frontend só é razoável em casos muito específicos, por exemplo:
+
+Notificações locais ou auto-enviadas: o próprio app React pode (via median bridge) disparar notificações apenas para o usuário atual (por exemplo, usando median.notifications.local() se disponível), mas isso é in-app e não push real pelo provedor.
+
+Ambientes controlados: em testes ou POCs, você poderia inserir chaves no código temporariamente, mas NUNCA em produção.
+
+Falta de servidor: se não houver servidor, a alternativa segura seria usar funções serverless ou serviços intermediários. Por exemplo, o aplicativo React pode fazer uma chamada autenticada a um endpoint de sua API (ou Cloud Function) que então utiliza as credenciais seguras para chamar o OneSignal/FCM.
+
+Recomendações: O ideal é sempre realizar o disparo de push no backend. Assim, seu código React apenas registra o dispositivo/usuário (via median.onesignal.login() ou similar) e o servidor assume a tarefa de enviar quando necessário
+docs.median.co
+docs.median.co
+. Isso também permite manter logs e aplicar lógica de negócio (envios baseados em eventos, personalização, agendamento, etc). Evite em todos os casos delegar o envio diretamente ao código cliente, por motivos de segurança e controle.
+
+Em resumo, o Median não fornece um meio “out-of-the-box” para envio de push direto do React sem backend. Toda documentação oficial assume que o envio será feito via OneSignal (painel ou API de servidor)
+docs.median.co
+. Fazer via front-end expõe credenciais e viola boas práticas; portanto, deve-se tratar como não recomendado, usando backend ou serviços de terceiros para mediar o envio de notificações.
+
+Referências: A documentação oficial do Median orienta a configuração de credenciais Firebase/Apple no OneSignal
+docs.median.co
+docs.median.co
+ e destaca que, no Median App Studio, basta informar o OneSignal App ID para integrar push
+docs.median.co
+. Para envios programáticos, recomenda-se o uso da API REST do OneSignal (servidor)
+docs.median.co
+, mantendo as chaves em ambiente seguro.
