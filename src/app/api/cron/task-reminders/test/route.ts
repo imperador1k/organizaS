@@ -23,17 +23,16 @@ export async function GET() {
         const usersSnapshot = await db.collection('users').get();
 
         const notifications: { type: string; task: string; userId: string; result: unknown }[] = [];
-        const tasksFound: { title: string; dueDate: string; userId: string }[] = [];
+        const tasksFound: { title: string; dueDate: string; completionDate: string; rawDueDate: string; userId: string }[] = [];
 
         for (const userDoc of usersSnapshot.docs) {
             const userId = userDoc.id;
 
-            // Get user's tasks that are not completed
+            // Get user's tasks - get ALL tasks for debugging (removed completionDate filter)
             const tasksSnapshot = await db
                 .collection('users')
                 .doc(userId)
                 .collection('tasks')
-                .where('completionDate', '==', null)
                 .get();
 
             for (const taskDoc of tasksSnapshot.docs) {
@@ -56,6 +55,8 @@ export async function GET() {
                 tasksFound.push({
                     title: taskData.title,
                     dueDate: dueDate.toISOString(),
+                    completionDate: taskData.completionDate ? 'has value' : 'null/undefined',
+                    rawDueDate: JSON.stringify(taskData.dueDate),
                     userId,
                 });
 
