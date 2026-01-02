@@ -73,16 +73,10 @@ export const usePersistentAuth = () => {
 
       const authData: StoredAuthData = JSON.parse(stored);
 
-      // Se rememberMe for true, nunca expirar a sessão
+      // Se rememberMe for true, retornar os dados sem verificar expiração
+      // O Firebase vai validar o token automaticamente via onAuthStateChanged
       if (authData.rememberMe) {
-        // Mesmo assim, verificar se o token do Firebase ainda é válido
-        if (auth.currentUser) {
-          return authData;
-        } else {
-          // Se o usuário não está mais autenticado no Firebase, limpar os dados
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-          return null;
-        }
+        return authData;
       }
 
       // Para usuários sem rememberMe, verificar expiração normal
@@ -225,7 +219,15 @@ export const usePersistentAuth = () => {
 
   // Listener para mudanças de estado de autenticação do Firebase
   useEffect(() => {
+    let clearTimeoutId: NodeJS.Timeout | null = null;
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      // Clear any pending timeout
+      if (clearTimeoutId) {
+        clearTimeout(clearTimeoutId);
+        clearTimeoutId = null;
+      }
+
       if (user) {
         // Usuário autenticado - salvar dados se necessário
         const storedAuthData = loadAuthData();
@@ -240,11 +242,18 @@ export const usePersistentAuth = () => {
           error: null,
         });
       } else {
-        // Usuário não autenticado - limpar dados se necessário
-        const storedAuthData = loadAuthData();
-        if (storedAuthData) {
-          clearAuthData();
-        }
+        // Usuário não autenticado
+        // Dar um pequeno delay antes de limpar os dados, pois o Firebase pode
+        // estar ainda a restaurar a sessão
+        clearTimeoutId = setTimeout(() => {
+          // Verificar novamente se ainda não há usuário
+          if (!auth.currentUser) {
+            const storedAuthData = loadAuthData();
+            if (storedAuthData) {
+              clearAuthData();
+            }
+          }
+        }, 2000); // Esperar 2 segundos antes de limpar
 
         setAuthState({
           user: null,
@@ -254,7 +263,12 @@ export const usePersistentAuth = () => {
       }
     });
 
-    return unsubscribe;
+    return () => {
+      if (clearTimeoutId) {
+        clearTimeout(clearTimeoutId);
+      }
+      unsubscribe();
+    };
   }, [loadAuthData, saveAuthData, clearAuthData]);
 
   // Verificar periodicamente se a sessão ainda é válida
