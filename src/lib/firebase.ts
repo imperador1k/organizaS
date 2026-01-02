@@ -2,7 +2,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
-import { getAuth, initializeAuth, browserLocalPersistence } from "firebase/auth";
+import { initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -20,9 +20,10 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services
+// Initialize Firebase Auth with IndexedDB persistence (more reliable for WebViews)
+// Falls back to localStorage if IndexedDB is not available
 const auth = initializeAuth(app, {
-  persistence: [browserLocalPersistence]
+  persistence: [indexedDBLocalPersistence, browserLocalPersistence]
 });
 const db = getFirestore(app);
 const storage = getStorage(app);

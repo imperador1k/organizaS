@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut, updateProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -20,8 +20,8 @@ interface SignupCredentials extends LoginCredentials {
 }
 
 const AUTH_STORAGE_KEY = 'organizas_auth_data';
-// Aumentado de 90 dias para 180 dias para manter a sessão ativa por mais tempo
-const SESSION_DURATION = 180 * 24 * 60 * 60 * 1000; // 180 dias em millisegundos (aprox. 6 meses)
+// Sessão de 1 ano para garantir persistência máxima
+const SESSION_DURATION = 365 * 24 * 60 * 60 * 1000;
 
 interface StoredAuthData {
   user: {
@@ -41,6 +41,11 @@ export const usePersistentAuth = () => {
     error: null,
   });
 
+  // Track if we've received the first auth state from Firebase
+  const hasReceivedAuthState = useRef(false);
+  // Track if we have stored auth data (indicates we should wait for Firebase to restore)
+  const hasStoredData = useRef(false);
+
   // Função para salvar dados de autenticação no localStorage
   const saveAuthData = useCallback((user: User, rememberMe: boolean = true) => {
     if (typeof window === 'undefined') return;
@@ -53,13 +58,14 @@ export const usePersistentAuth = () => {
         photoURL: user.photoURL,
       },
       timestamp: Date.now(),
-      rememberMe,
+      rememberMe: true, // SEMPRE true para máxima persistência
     };
 
     try {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+      console.log('[Auth] Dados salvos no localStorage');
     } catch (error) {
-      console.error('Erro ao salvar dados de autenticação:', error);
+      console.error('[Auth] Erro ao salvar dados:', error);
     }
   }, []);
 
@@ -69,35 +75,31 @@ export const usePersistentAuth = () => {
 
     try {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (!stored) return null;
-
-      const authData: StoredAuthData = JSON.parse(stored);
-
-      // Se rememberMe for true, retornar os dados sem verificar expiração
-      // O Firebase vai validar o token automaticamente via onAuthStateChanged
-      if (authData.rememberMe) {
-        return authData;
-      }
-
-      // Para usuários sem rememberMe, verificar expiração normal
-      const isExpired = Date.now() - authData.timestamp > SESSION_DURATION;
-      if (isExpired) {
-        localStorage.removeItem(AUTH_STORAGE_KEY);
+      if (!stored) {
+        console.log('[Auth] Nenhum dado armazenado');
         return null;
       }
 
-      // Se a sessão estiver próxima de expirar (menos de 30 dias restantes), estender automaticamente
-      const daysRemaining = (SESSION_DURATION - (Date.now() - authData.timestamp)) / (24 * 60 * 60 * 1000);
-      if (daysRemaining < 30) {
-        // Estender a sessão por mais 180 dias
-        authData.timestamp = Date.now();
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+      const authData: StoredAuthData = JSON.parse(stored);
+      console.log('[Auth] Dados carregados do localStorage:', authData.user.email);
+
+      // Verificar expiração apenas se não for rememberMe
+      if (!authData.rememberMe) {
+        const isExpired = Date.now() - authData.timestamp > SESSION_DURATION;
+        if (isExpired) {
+          console.log('[Auth] Sessão expirada');
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+          return null;
+        }
       }
+
+      // Atualizar timestamp para estender sessão
+      authData.timestamp = Date.now();
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
 
       return authData;
     } catch (error) {
-      console.error('Erro ao carregar dados de autenticação:', error);
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+      console.error('[Auth] Erro ao carregar dados:', error);
       return null;
     }
   }, []);
@@ -108,8 +110,9 @@ export const usePersistentAuth = () => {
 
     try {
       localStorage.removeItem(AUTH_STORAGE_KEY);
+      console.log('[Auth] Dados limpos do localStorage');
     } catch (error) {
-      console.error('Erro ao limpar dados de autenticação:', error);
+      console.error('[Auth] Erro ao limpar dados:', error);
     }
   }, []);
 
@@ -125,7 +128,7 @@ export const usePersistentAuth = () => {
       );
 
       const user = userCredential.user;
-      saveAuthData(user, rememberMe);
+      saveAuthData(user, true);
 
       setAuthState({
         user,
@@ -159,14 +162,13 @@ export const usePersistentAuth = () => {
 
       const user = userCredential.user;
 
-      // Atualizar perfil se displayName foi fornecido
       if (credentials.displayName) {
         await updateProfile(user, {
           displayName: credentials.displayName,
         });
       }
 
-      saveAuthData(user, rememberMe);
+      saveAuthData(user, true);
 
       setAuthState({
         user,
@@ -214,27 +216,24 @@ export const usePersistentAuth = () => {
     }
   }, [clearAuthData]);
 
-  // Nota: Removido o useEffect de checkPersistentAuth que causava race condition.
-  // Agora dependemos exclusivamente do onAuthStateChanged para determinar o estado de autenticação.
+  // Verificar se temos dados armazenados no início
+  useEffect(() => {
+    const storedData = loadAuthData();
+    hasStoredData.current = !!storedData;
+    console.log('[Auth] Tem dados armazenados:', hasStoredData.current);
+  }, [loadAuthData]);
 
   // Listener para mudanças de estado de autenticação do Firebase
   useEffect(() => {
-    let clearTimeoutId: NodeJS.Timeout | null = null;
+    console.log('[Auth] Inicializando listener do Firebase');
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // Clear any pending timeout
-      if (clearTimeoutId) {
-        clearTimeout(clearTimeoutId);
-        clearTimeoutId = null;
-      }
+      console.log('[Auth] onAuthStateChanged:', user?.email || 'null');
 
       if (user) {
-        // Usuário autenticado - salvar dados se necessário
-        const storedAuthData = loadAuthData();
-        if (!storedAuthData || storedAuthData.user.uid !== user.uid) {
-          // Se não há dados armazenados, usar rememberMe = true por padrão
-          saveAuthData(user, true);
-        }
+        // Usuário autenticado
+        hasReceivedAuthState.current = true;
+        saveAuthData(user, true);
 
         setAuthState({
           user,
@@ -242,18 +241,31 @@ export const usePersistentAuth = () => {
           error: null,
         });
       } else {
-        // Usuário não autenticado
-        // Dar um pequeno delay antes de limpar os dados, pois o Firebase pode
-        // estar ainda a restaurar a sessão
-        clearTimeoutId = setTimeout(() => {
-          // Verificar novamente se ainda não há usuário
-          if (!auth.currentUser) {
-            const storedAuthData = loadAuthData();
-            if (storedAuthData) {
+        // Firebase retornou null
+        // Se temos dados armazenados e é a primeira vez, esperar mais tempo
+        if (hasStoredData.current && !hasReceivedAuthState.current) {
+          console.log('[Auth] Firebase retornou null mas temos dados armazenados, aguardando...');
+
+          // Aguardar um pouco mais para o Firebase restaurar a sessão
+          setTimeout(() => {
+            // Verificar novamente
+            if (!auth.currentUser) {
+              console.log('[Auth] Firebase não restaurou a sessão após espera');
+              hasReceivedAuthState.current = true;
               clearAuthData();
+              setAuthState({
+                user: null,
+                loading: false,
+                error: null,
+              });
             }
-          }
-        }, 2000); // Esperar 2 segundos antes de limpar
+          }, 3000); // Esperar 3 segundos
+
+          // Não mudar o estado ainda - manter loading
+          return;
+        }
+
+        hasReceivedAuthState.current = true;
 
         setAuthState({
           user: null,
@@ -263,44 +275,8 @@ export const usePersistentAuth = () => {
       }
     });
 
-    return () => {
-      if (clearTimeoutId) {
-        clearTimeout(clearTimeoutId);
-      }
-      unsubscribe();
-    };
-  }, [loadAuthData, saveAuthData, clearAuthData]);
-
-  // Verificar periodicamente se a sessão ainda é válida
-  useEffect(() => {
-    const checkSessionValidity = () => {
-      const storedAuthData = loadAuthData();
-      if (storedAuthData) {
-        // Sempre renovar o token se o usuário estiver logado
-        if (auth.currentUser) {
-          // Atualizar o timestamp para estender a sessão
-          storedAuthData.timestamp = Date.now();
-          try {
-            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(storedAuthData));
-          } catch (error) {
-            console.error('Erro ao atualizar timestamp da sessão:', error);
-          }
-        } else if (!storedAuthData.rememberMe) {
-          // Apenas fazer logout se rememberMe for false e a sessão expirou
-          const isExpired = Date.now() - storedAuthData.timestamp > SESSION_DURATION;
-          if (isExpired) {
-            logout();
-          }
-        }
-        // Se rememberMe for true, nunca fazer logout automaticamente
-      }
-    };
-
-    // Verificar a cada 30 minutos
-    const interval = setInterval(checkSessionValidity, 30 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [loadAuthData, logout]);
+    return unsubscribe;
+  }, [saveAuthData, clearAuthData]);
 
   return {
     ...authState,
