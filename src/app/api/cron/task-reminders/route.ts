@@ -59,16 +59,20 @@ export async function GET(request: Request) {
         for (const userDoc of usersSnapshot.docs) {
             const userId = userDoc.id;
 
-            // Get user's tasks that are not completed
+            // Get user's tasks (without completionDate filter - we'll filter manually)
             const tasksSnapshot = await db
                 .collection('users')
                 .doc(userId)
                 .collection('tasks')
-                .where('completionDate', '==', null)
                 .get();
 
             for (const taskDoc of tasksSnapshot.docs) {
                 const taskData = taskDoc.data();
+
+                // Skip completed tasks
+                if (taskData.completionDate) {
+                    continue;
+                }
 
                 // Convert Firestore Timestamp to Date
                 let dueDate: Date;
