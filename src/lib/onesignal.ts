@@ -143,3 +143,62 @@ export async function sendTaskReminder(params: {
         },
     });
 }
+
+/**
+ * Send an event countdown reminder notification
+ * Used for balanced countdown: 10, 7, 3, 1, today
+ */
+export async function sendEventReminder(params: {
+    eventTitle: string;
+    importance: 'low' | 'medium' | 'high';
+    daysRemaining: number | 'today';
+    eventTime?: string;
+    externalUserIds?: string[];
+    sendToAll?: boolean;
+}): Promise<OneSignalResponse> {
+    const { eventTitle, importance, daysRemaining, eventTime, externalUserIds, sendToAll } = params;
+
+    // Importance emojis
+    const importanceEmoji: Record<string, string> = {
+        low: '📅',
+        medium: '📆',
+        high: '🔥',
+    };
+
+    const emoji = importanceEmoji[importance] || '📅';
+
+    // Build message based on days remaining
+    let title: string;
+    let message: string;
+
+    if (daysRemaining === 'today') {
+        title = `${emoji} Evento HOJE!`;
+        message = `O evento "${eventTitle}" é hoje${eventTime ? ` às ${eventTime}` : ''}! Não te esqueças!`;
+    } else if (daysRemaining === 1) {
+        title = `${emoji} Evento Amanhã!`;
+        message = `O evento "${eventTitle}" é amanhã${eventTime ? ` às ${eventTime}` : ''}!`;
+    } else if (daysRemaining === 3) {
+        title = `${emoji} Faltam 3 dias!`;
+        message = `O evento "${eventTitle}" está a chegar! Faltam apenas 3 dias.`;
+    } else if (daysRemaining === 7) {
+        title = `${emoji} Falta 1 semana!`;
+        message = `O evento "${eventTitle}" é daqui a 7 dias. Já começas a preparar-te?`;
+    } else if (daysRemaining === 10) {
+        title = `${emoji} Faltam 10 dias!`;
+        message = `O evento "${eventTitle}" está a aproximar-se. Faltam 10 dias!`;
+    } else {
+        title = `${emoji} Faltam ${daysRemaining} dias!`;
+        message = `O evento "${eventTitle}" é daqui a ${daysRemaining} dias.`;
+    }
+
+    return sendPushNotification({
+        title,
+        message,
+        externalUserIds,
+        sendToAll,
+        data: {
+            type: 'event_reminder',
+            daysRemaining: String(daysRemaining),
+        },
+    });
+}
