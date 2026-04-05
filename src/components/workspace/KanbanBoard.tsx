@@ -2,20 +2,20 @@
 
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { useEffect, useState } from "react";
-import { collection, query, onSnapshot, orderBy, doc, writeBatch, addDoc, deleteDoc } from "firebase/firestore";
+import { collection, query, onSnapshot, orderBy, doc, writeBatch, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AppDataContext";
 import { KanbanColumn, KanbanCard } from "@/lib/types";
 import { Loader } from "@/components/Loader";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { Plus, Trash, GripHorizontal } from "lucide-react";
+import { Plus, Trash, GripHorizontal, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 export function KanbanBoard({ pageId }: { pageId: string }) {
   const { user } = useAuth();
-  const { activeWorkspaceId } = useWorkspace();
+  const { activeWorkspaceId, createPage, setActivePageId } = useWorkspace();
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [cards, setCards] = useState<KanbanCard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,7 +112,31 @@ export function KanbanBoard({ pageId }: { pageId: string }) {
       console.error("Error adding card: ", e);
     }
   };
+    const handleOpenCardPage = async (card: KanbanCard) => {
+      if (!user || !activeWorkspaceId || !pageId) return;
 
+      if (card.linkedPageId) {
+        // Just jump to it
+        setActivePageId(card.linkedPageId);
+      } else {
+        // Create new page for this card
+        try {
+          const newPageId = await createPage(activeWorkspaceId, card.title, 'blocks', undefined, {
+            type: 'kanban',
+            pageId: pageId,
+            itemId: card.id
+          });
+          if (newPageId) {
+            // Link it to the card
+            const cardRef = doc(db, `users/${user.uid}/workspaces/${activeWorkspaceId}/pages/${pageId}/kanban_cards/${card.id}`);
+            await updateDoc(cardRef, { linkedPageId: newPageId });
+            setActivePageId(newPageId);
+          }
+        } catch (error) {
+          console.error('Failed to create and link page', error);
+        }
+      }
+    };
   const onDragEnd = async (result: DropResult) => {
     if (!result.destination || !user || !activeWorkspaceId) return;
     const { source, destination, draggableId } = result;
@@ -202,8 +226,19 @@ export function KanbanBoard({ pageId }: { pageId: string }) {
                             <div className="absolute top-2 right-2 opacity-0 group-hover/card:opacity-100 transition-opacity cursor-grab text-muted-foreground/30 hover:text-muted-foreground">
                               <GripHorizontal className="w-4 h-4" />
                             </div>
-                            <p className="text-sm font-medium pr-5 text-foreground leading-snug">{card.title}</p> 
+                            <p className="text-sm font-medium pr-5 text-foreground leading-snug">{card.title}</p>
                             {card.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">{card.description}</p>}
+                            <div className="pt-3 mt-3 border-t border-border/40 flex justify-end">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 px-2 text-[10px] bg-muted/30 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                                onClick={(e) => { e.stopPropagation(); handleOpenCardPage(card); }}
+                              >
+                                <FileText className="w-3 h-3 mr-1.5" />
+                                {card.linkedPageId ? 'Open Page' : 'Create Page'}
+                              </Button>
+                            </div>
                           </div>
                         )}
                       </Draggable>

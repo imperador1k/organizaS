@@ -6,7 +6,7 @@ import { collection, query, onSnapshot, doc, setDoc, deleteDoc, writeBatch } fro
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AppDataContext";
 import { Loader } from "@/components/Loader";
-import { Plus, Trash2, Maximize, Minimize, Copy, Link as LinkIcon, ExternalLink, ArrowRightLeft } from "lucide-react";
+import { Plus, Trash2, Maximize, Minimize, Copy, Link as LinkIcon, ExternalLink, ArrowRightLeft, FileText } from "lucide-react";
 import {
   ReactFlow,
   Controls,
@@ -204,12 +204,19 @@ function MindMapNode({ id, data, selected }: any) {
         >
           <LinkIcon className="w-3 h-3" />
         </button>
+        <button
+          onClick={() => data.onOpenPage?.(id, data.label, data.linkedPageId)}
+          className="bg-indigo-500/10 text-indigo-500 rounded-full w-7 h-7 flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-transform border border-indigo-500/20 hover:bg-indigo-500 hover:text-white"
+          title={data.linkedPageId ? "Open Page" : "Create Page"}
+        >
+          <FileText className="w-3 h-3" />
+        </button>
       </div>
 
       {!isRoot && (
         <div className={`absolute -top-3 -right-3 transition-opacity duration-200 ${hovered || selected ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <button 
-            onClick={() => data.onDelete(id)} 
+          <button
+            onClick={() => data.onDelete(id)}
             className="bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-transform"
             title="Delete node"
           >
@@ -227,7 +234,7 @@ const edgeTypes = { mindmap: MindMapEdge };
 // --- MAIN CONTENT ---
 function FlowContent({ pageId, isFullscreen, toggleFullscreen }: { pageId: string, isFullscreen: boolean, toggleFullscreen: () => void }) {
   const { user } = useAuth();
-  const { activeWorkspaceId } = useWorkspace();
+  const { activeWorkspaceId, createPage, setActivePageId } = useWorkspace();
   const { fitView, getNodes, getEdges } = useReactFlow();
 
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -468,6 +475,27 @@ function FlowContent({ pageId, isFullscreen, toggleFullscreen }: { pageId: strin
     deleteDoc(doc(getEdgesRef(), id));
   }, [user, activeWorkspaceId, pageId]);
 
+  const handleOpenPage = useCallback(async (nodeId: string, nodeLabel: string, linkedPageId?: string) => {
+    if (!user || !activeWorkspaceId || !pageId) return;
+    if (linkedPageId) {
+      setActivePageId(linkedPageId);
+    } else {
+      try {
+        const newPageId = await createPage(activeWorkspaceId, nodeLabel || 'New Node Document', 'blocks', undefined, {
+          type: 'mindmap',
+          pageId: pageId,
+          itemId: nodeId
+        });
+        if (newPageId) {
+          setDoc(doc(getNodesRef(), nodeId), { linkedPageId: newPageId }, { merge: true });
+          setActivePageId(newPageId);
+        }
+      } catch (error) {
+        console.error("Failed to create linked page for mindmap node", error);
+      }
+    }
+  }, [user, activeWorkspaceId, pageId, createPage, setActivePageId]);
+
   // Inject callbacks into nodes before rendering
   const nodesWithCallbacks = useMemo(() => {
     return nodes.map(n => ({
@@ -478,10 +506,11 @@ function FlowContent({ pageId, isFullscreen, toggleFullscreen }: { pageId: strin
         onAddChild: handleAddChild,
         onDelete: handleDeleteNode,
         onDuplicate: handleDuplicateNode,
-        onUpdateUrl: handleUpdateUrl
+        onUpdateUrl: handleUpdateUrl,
+        onOpenPage: handleOpenPage
       }
     }));
-  }, [nodes, updateNodeLabel, handleAddChild, handleDeleteNode, handleDuplicateNode, handleUpdateUrl]);
+  }, [nodes, updateNodeLabel, handleAddChild, handleDeleteNode, handleDuplicateNode, handleUpdateUrl, handleOpenPage]);
 
   const edgesWithCallbacks = useMemo(() => {
     return edges.map(e => ({

@@ -125,6 +125,11 @@ export interface WorkspacePage {
   content?: string; // Tiptap JSON content or HTML
   createdAt: string;
   updatedAt: string;
+  origin?: {
+    type: 'kanban' | 'mindmap';
+    pageId: string; // The ID of the Kanban or Mindmap page
+    itemId: string; // The ID of the specific Kanban Card or Mindmap Node
+  };
 }
 
 export interface Block {
@@ -153,6 +158,7 @@ export interface KanbanCard {
   order: number;
   createdAt: string;
   updatedAt: string;
+  linkedPageId?: string;
 }
 
 export interface MindMapNode {

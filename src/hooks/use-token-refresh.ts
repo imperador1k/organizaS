@@ -14,7 +14,11 @@ export const useTokenRefresh = (user: User | null) => {
       const token = await currentUser.getIdToken(true);
       console.log('Token renovado com sucesso');
       return token;
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.code === 'auth/network-request-failed') {
+        console.warn('Falha na rede ao renovar token, tentando usar o cache atual.');
+        return await currentUser.getIdToken(false);
+      }
       console.error('Erro ao renovar token:', error);
       throw error;
     }

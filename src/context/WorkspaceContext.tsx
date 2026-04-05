@@ -18,7 +18,7 @@ interface WorkspaceContextProps {
   createWorkspace: (name: string, icon?: string) => Promise<string>;
   updateWorkspace: (id: string, name: string, icon?: string) => Promise<void>;
   deleteWorkspace: (id: string) => Promise<void>;
-  createPage: (workspaceId: string, name: string, viewType?: PageViewType, icon?: string) => Promise<string>;
+  createPage: (workspaceId: string, name: string, viewType?: PageViewType, icon?: string, origin?: WorkspacePage['origin']) => Promise<string>;
   updatePage: (id: string, updates: Partial<WorkspacePage>) => Promise<void>;
   deletePage: (id: string) => Promise<void>;
 }
@@ -129,18 +129,23 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const createPage = async (workspaceId: string, name: string, viewType: PageViewType = 'blocks', icon?: string) => {
+const createPage = async (workspaceId: string, name: string, viewType: PageViewType = 'blocks', icon?: string, origin?: WorkspacePage['origin']) => {
     if (!user) throw new Error("Not authenticated");
     const pageRef = doc(collection(db, `users/${user.uid}/workspaces/${workspaceId}/pages`));
-    
-    await setDoc(pageRef, {
+
+    const newPage: any = {
       workspaceId,
       name,
       viewType,
       icon: icon || "📄",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
-    });
+    };
+    if (origin) {
+      newPage.origin = origin;
+    }
+
+    await setDoc(pageRef, newPage);
     
     return pageRef.id;
   };

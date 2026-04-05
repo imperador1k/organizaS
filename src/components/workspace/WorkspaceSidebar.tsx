@@ -2,13 +2,13 @@
 
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { Button } from "@/components/ui/button";
-import { Plus, LayoutTemplate, SquareKanban, Network, FileText, Settings, Trash2 } from "lucide-react";
+import { Plus, LayoutTemplate, SquareKanban, Network, FileText, Settings, Trash2, ChevronDown, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { PageViewType } from "@/lib/types";
+import { PageViewType, WorkspacePage } from "@/lib/types";
 
 export function WorkspaceSidebar() {
   const { 
@@ -27,6 +27,12 @@ export function WorkspaceSidebar() {
   const [newPageViewType, setNewPageViewType] = useState<PageViewType>('blocks');
   const [isWsDialogOpen, setIsWsDialogOpen] = useState(false);
   const [isPageDialogOpen, setIsPageDialogOpen] = useState(false);
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+
+  const toggleFolder = (e: React.MouseEvent, pageId: string) => {
+    e.stopPropagation();
+    setExpandedFolders(prev => ({ ...prev, [pageId]: !prev[pageId] }));
+  };
 
   const handleCreateWorkspace = async () => {
     if (!newWsName.trim()) return;
@@ -42,6 +48,70 @@ export function WorkspaceSidebar() {
     setNewPageName("");
     setIsPageDialogOpen(false);
   };
+
+  const renderPageItem = (page: WorkspacePage, depth = 0) => {
+    const children = pages.filter(p => p.origin?.pageId === page.id);
+    const hasChildren = children.length > 0;
+    const isExpanded = expandedFolders[page.id];
+
+    return (
+      <div key={page.id}>
+        <div
+          className={`flex items-center justify-between p-2 mb-1 rounded-md cursor-pointer transition-colors group ${
+            activePageId === page.id 
+              ? 'bg-primary/10 text-primary font-medium'
+              : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+          }`}
+          style={{ paddingLeft: `${0.5 + (depth * 1.0)}rem` }}
+          onClick={() => setActivePageId(page.id)}
+        >
+          <div className="flex items-center truncate">
+            {hasChildren ? (
+              <div 
+                className="w-4 h-4 mr-1 flex items-center justify-center cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 rounded"
+                onClick={(e) => toggleFolder(e, page.id)}
+              >
+                {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              </div>
+            ) : (
+              <div className={`${depth > 0 ? 'w-5' : 'w-1'}`} />
+            )}
+
+            {page.viewType === 'blocks' && <FileText className="mr-2 h-4 w-4 shrink-0 text-indigo-400" />}
+            {page.viewType === 'kanban' && <SquareKanban className="mr-2 h-4 w-4 shrink-0 text-amber-500" />}
+            {page.viewType === 'mindmap' && <Network className="mr-2 h-4 w-4 shrink-0 text-emerald-500" />}
+            <span className="truncate text-sm">{page.name}</span>
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 hover:opacity-100 group-hover:opacity-100 focus:opacity-100 shrink-0">
+                <Settings className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => {
+                e.stopPropagation();
+                if(confirm('Are you sure you want to delete this page?')) { 
+                  deletePage(page.id);
+                }
+              }}>
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Page
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        {hasChildren && isExpanded && (
+          <div className="flex flex-col">
+            {children.map(child => renderPageItem(child, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const rootPages = pages.filter(p => !p.origin);
 
   return (
     <div className="flex w-64 border-right border-border h-full bg-muted/10 flex-col pt-4 shrink-0">
@@ -111,42 +181,7 @@ export function WorkspaceSidebar() {
         </div>
 
         <ScrollArea className="flex-1 px-2">
-          {pages.map(page => (
-            <div
-              key={page.id}
-              className={`flex items-center justify-between p-2 mb-1 rounded-md cursor-pointer transition-colors ${
-                activePageId === page.id 
-                  ? 'bg-primary/10 text-primary font-medium' 
-                  : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-              }`}
-              onClick={() => setActivePageId(page.id)}
-            >
-              <div className="flex items-center truncate">
-                {page.viewType === 'blocks' && <FileText className="mr-2 h-4 w-4" />}
-                {page.viewType === 'kanban' && <SquareKanban className="mr-2 h-4 w-4" />}
-                {page.viewType === 'mindmap' && <Network className="mr-2 h-4 w-4" />}
-                <span className="truncate text-sm">{page.name}</span>
-              </div>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 hover:opacity-100 group-hover:opacity-100 focus:opacity-100">
-                    <Settings className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => {
-                    e.stopPropagation();
-                    if(confirm('Are you sure you want to delete this page?')) {
-                      deletePage(page.id);
-                    }
-                  }}>
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete Page
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ))}
+          {rootPages.map(page => renderPageItem(page))}
           {pages.length === 0 && activeWorkspaceId && (
             <div className="text-xs text-center text-muted-foreground p-4">No pages yet. Create one!</div>
           )}

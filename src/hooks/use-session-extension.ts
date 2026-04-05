@@ -12,7 +12,7 @@ export const useSessionExtension = (user: User | null) => {
     try {
       // Renovar o token do Firebase
       await user.getIdToken(true);
-      
+
       // Atualizar o timestamp da sessão no localStorage
       const stored = localStorage.getItem('organizas_auth_data');
       if (stored) {
@@ -20,9 +20,13 @@ export const useSessionExtension = (user: User | null) => {
         authData.timestamp = Date.now();
         localStorage.setItem('organizas_auth_data', JSON.stringify(authData));
       }
-      
+
       console.log('Sessão estendida com sucesso');
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.code === 'auth/network-request-failed') {
+        console.warn('Falha na rede ao estender a sessão, ignorando erro.');
+        return;
+      }
       console.error('Erro ao estender sessão:', error);
     }
   }, [user]);
