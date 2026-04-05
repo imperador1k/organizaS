@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { imageDataUrl, userId } = await request.json();
+    const { imageDataUrl, userId, fileName } = await request.json();
 
     if (!imageDataUrl || !userId) {
       return NextResponse.json(
@@ -42,17 +42,28 @@ export async function POST(request: NextRequest) {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(imageDataUrl, {
-      public_id: `avatars/${userId}`,
-      folder: 'organizas/avatars',
+    const uploadOptions: any = {
+      folder: 'organizas/uploads',
       overwrite: true,
-      resource_type: 'image',
-      transformation: [
-        { width: 400, height: 400, crop: 'fill', gravity: 'face' },
-        { quality: 'auto', fetch_format: 'auto' }
-      ]
-    });
+      resource_type: 'auto',
+    };
+
+    if (fileName) {
+      const nameParts = fileName.split('.');
+      const ext = nameParts.length > 1 ? nameParts.pop() : '';
+      const baseName = nameParts.join('.').replace(/[^a-zA-Z0-9-]/g, '_');
+      
+      uploadOptions.public_id = `${baseName}_${Date.now()}`;
+      
+      // Cloudinary drops extensions for "raw" files unless they are in the public_id.
+      // We append it for non-images to ensure Word viewers and PDF viewers can recognize the file type.
+      if (ext && !['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext.toLowerCase())) {
+        uploadOptions.public_id += `.${ext}`;
+      }
+    }
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(imageDataUrl, uploadOptions);
 
     return NextResponse.json({ 
       success: true, 

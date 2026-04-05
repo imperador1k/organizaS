@@ -29,6 +29,34 @@ service cloud.firestore {
       match /breaks/{breakId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
+
+      match /workspaces/{workspaceId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+        
+        match /pages/{pageId} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+          
+          match /blocks/{blockId} {
+            allow read, write: if request.auth != null && request.auth.uid == userId;
+          }
+          
+          match /kanban_columns/{colId} {
+            allow read, write: if request.auth != null && request.auth.uid == userId;
+          }
+          
+          match /kanban_cards/{cardId} {
+            allow read, write: if request.auth != null && request.auth.uid == userId;
+          }
+          
+          match /mind_map_nodes/{nodeId} {
+            allow read, write: if request.auth != null && request.auth.uid == userId;
+          }
+          
+          match /mind_map_edges/{edgeId} {
+            allow read, write: if request.auth != null && request.auth.uid == userId;
+          }
+        }
+      }
     }
   }
 }

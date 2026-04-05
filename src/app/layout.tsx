@@ -10,6 +10,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Loader } from '@/components/Loader';
 import { cn } from '@/lib/utils';
 import { AppDataProvider, useAuth } from '@/context/AppDataContext';
+import { WorkspaceProvider } from '@/context/WorkspaceContext';
 import { AuthInitializer } from '@/components/AuthInitializer';
 import { SessionStatus } from '@/components/SessionStatus';
 import { OneSignalInit } from '@/components/OneSignalInit';
@@ -79,14 +80,16 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <OneSignalInit />
         <AppDataProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AppContent>{children}</AppContent>
-          </ThemeProvider>
+          <WorkspaceProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AppContent>{children}</AppContent>
+            </ThemeProvider>
+          </WorkspaceProvider>
         </AppDataProvider>
       </body>
     </html>

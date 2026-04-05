@@ -102,3 +102,75 @@ export type ScheduledItem = {
     time?: string;      // The scheduled start time, e.g., "09:00"
     endTime?: string;  // The scheduled end time, e.g., "10:00"
 };
+
+// --- WORKSPACE & NOTION-LIKE ARCHITECTURE TYPES ---
+
+export interface Workspace {
+  id: string;
+  name: string;
+  icon?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PageViewType = 'blocks' | 'kanban' | 'mindmap';
+
+export interface WorkspacePage {
+  id: string;
+  workspaceId: string;
+  name: string;
+  icon?: string;
+  parent?: string; // For nesting pages
+  viewType: PageViewType;
+  content?: string; // Tiptap JSON content or HTML
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Block {
+  id: string;
+  pageId: string;
+  type: 'text' | 'heading1' | 'heading2' | 'heading3' | 'task' | 'image' | 'code' | 'quote' | 'bullet_list_item' | 'ordered_list_item';
+  content: Record<string, any>; // Flexible structure matching the TipTap or block editor format
+  order: number;
+  parent?: string;
+}
+
+export interface KanbanColumn {
+  id: string;
+  pageId: string;
+  name: string;
+  color?: string;
+  order: number;
+}
+
+export interface KanbanCard {
+  id: string;
+  columnId: string;
+  title: string;
+  description?: string;
+  properties: Record<string, any>;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MindMapNode {
+  id: string;
+  pageId: string;
+  title: string;
+  content?: string;
+  color?: string;
+  position: { x: number; y: number };
+  width?: number;
+  height?: number;
+  type?: string; 
+}
+
+export interface MindMapEdge {
+  id: string;
+  pageId: string;
+  source: string; // node ID
+  target: string; // node ID
+  label?: string;
+}

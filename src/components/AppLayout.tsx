@@ -12,6 +12,7 @@ import {
   Clock,
   CalendarDays,
   BookOpen,
+  FileText,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -27,7 +28,7 @@ const menuItems = [
   { href: '/events', label: 'Events', icon: CalendarDays },
   { href: '/calendar', label: 'Calendar', icon: Calendar },
   { href: '/schedule', label: 'Schedule', icon: Clock },
-  { href: '/study', label: 'Study', icon: BookOpen },
+  { href: '/study', label: 'Workspace', icon: FileText },
 ];
 
 function DesktopNav() {
