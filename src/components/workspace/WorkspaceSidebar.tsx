@@ -3,6 +3,7 @@
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Plus, LayoutTemplate, SquareKanban, Network, FileText, Settings, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Inbox } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -182,7 +183,7 @@ export function WorkspaceSidebar() {
 
         <ScrollArea className="flex-1 px-2">
           {rootPages.map(page => renderPageItem(page))}
-          {pages.length === 0 && activeWorkspaceId && (
+          {rootPages.length === 0 && activeWorkspaceId && (
             <div className="text-xs text-center text-muted-foreground p-4">No pages yet. Create one!</div>
           )}
         </ScrollArea>
@@ -190,3 +191,6 @@ export function WorkspaceSidebar() {
     </div>
   );
 }
+
+
+

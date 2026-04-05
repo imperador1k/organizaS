@@ -180,3 +180,11 @@ export interface MindMapEdge {
   target: string; // node ID
   label?: string;
 }
+
+export interface InboxItem {
+  id: string;
+  content: string;
+  attachments: { type: 'image' | 'excalidraw' | 'file'; url: string; name: string }[];
+  createdAt: number;
+}
+

@@ -13,6 +13,7 @@ import {
   CalendarDays,
   BookOpen,
   FileText,
+  Inbox,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -23,6 +24,7 @@ import { isSameDay } from 'date-fns';
 
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: Home },
+  { href: '/inbox', label: 'Inbox', icon: Inbox },
   { href: '/goals', label: 'Habits', icon: Target },
   { href: '/todo', label: 'To-Do', icon: ClipboardList },
   { href: '/events', label: 'Events', icon: CalendarDays },
@@ -103,6 +105,8 @@ function MobileBottomNav() {
 }
 
 
+import { QuickCaptureButton } from "@/components/workspace/QuickCaptureButton";
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, userProfile } = useAuth();
 
@@ -137,6 +141,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
         </main>        
         <MobileBottomNav />
+        <QuickCaptureButton />
     </div>
   );
 }
+
