@@ -166,26 +166,27 @@ export function KanbanBoard({ pageId }: { pageId: string }) {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="h-full w-full flex space-x-6 overflow-x-auto pb-4 items-start">       
+        <div className="h-full w-full flex gap-4 md:gap-6 overflow-x-auto pb-6 items-start snap-x snap-mandatory">       
           {columns.map(col => (
             <Droppable key={col.id} droppableId={col.id}>
               {(provided) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="w-80 shrink-0 bg-muted/20 rounded-xl p-4 flex flex-col max-h-full border border-border/40"
+                  className="w-[280px] md:w-[320px] shrink-0 bg-muted/40 rounded-xl p-3 flex flex-col max-h-[calc(100vh-10rem)] border border-border/50 shadow-sm snap-center"
                 >
-                  <div className="flex items-center justify-between mb-4 text-muted-foreground group/col">
-                    <h3 className="font-semibold text-sm uppercase tracking-wider flex items-center gap-2">
-                      <GripHorizontal className="w-4 h-4 opacity-50" />
+                  <div className="flex items-center justify-between mb-3 group/col px-1">
+                    <h3 className="font-semibold text-[13px] uppercase tracking-wider flex items-center text-foreground/80">
                       <span>{col.name}</span>
-                      <span className="bg-muted px-2 rounded-full text-xs">{cards.filter(c => c.columnId === col.id).length}</span>
+                      <span className="ml-2 bg-background border shadow-sm px-2 py-0.5 rounded-full text-[10px] tabular-nums text-muted-foreground">
+                        {cards.filter(c => c.columnId === col.id).length}
+                      </span>
                     </h3>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover/col:opacity-100" onClick={() => handleDeleteColumn(col.id)}>
-                      <Trash className="w-4 h-4 text-destructive" />
+                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover/col:opacity-100 transition-opacity hover:bg-destructive/10" onClick={() => handleDeleteColumn(col.id)}>
+                      <Trash className="w-3.5 h-3.5 text-destructive/70 hover:text-destructive" />
                     </Button>
                   </div>
-                  <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-[10px]">
+                  <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-[10px] scrollbar-thin">
                     {cards
                       .filter(c => c.columnId === col.id)
                       .sort((a,b) => a.order - b.order)
@@ -196,10 +197,13 @@ export function KanbanBoard({ pageId }: { pageId: string }) {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className="bg-card text-card-foreground p-4 rounded-lg shadow-sm border border-border/50 hover:border-primary/50 transition-colors" 
+                            className="bg-background group/card p-3.5 rounded-lg shadow-sm border border-border/60 hover:border-primary/40 hover:shadow transition-all relative overflow-hidden" 
                           >
-                            <p className="text-sm font-medium">{card.title}</p> 
-                            {card.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{card.description}</p>}
+                            <div className="absolute top-2 right-2 opacity-0 group-hover/card:opacity-100 transition-opacity cursor-grab text-muted-foreground/30 hover:text-muted-foreground">
+                              <GripHorizontal className="w-4 h-4" />
+                            </div>
+                            <p className="text-sm font-medium pr-5 text-foreground leading-snug">{card.title}</p> 
+                            {card.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">{card.description}</p>}
                           </div>
                         )}
                       </Draggable>
@@ -208,7 +212,7 @@ export function KanbanBoard({ pageId }: { pageId: string }) {
                   </div>
                   <button 
                     onClick={() => setAddingCardToColumn(col.id)}
-                    className="w-full mt-4 text-left text-sm text-muted-foreground hover:text-foreground py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-between group">
+                    className="w-full mt-3 text-left text-sm font-medium text-muted-foreground hover:text-primary py-2 px-3 rounded-lg hover:bg-background/80 transition-colors flex items-center justify-between group shadow-sm border border-transparent hover:border-border/50">
                     <span className="flex items-center gap-2"><Plus className="w-4 h-4" /> Add Card</span>
                   </button>
                 </div>
@@ -216,30 +220,31 @@ export function KanbanBoard({ pageId }: { pageId: string }) {
             </Droppable>
           ))}
           
-          <div className="w-80 shrink-0">
+          <div className="w-[280px] md:w-[320px] shrink-0 snap-center pb-4">
             {!isAddingColumn ? (
               <Button 
-                variant="outline" 
-                className="w-full border-dashed flex items-center justify-start gap-2 h-12 bg-muted/20"
+                variant="ghost" 
+                className="w-full flex items-center justify-start gap-2 h-12 bg-muted/20 hover:bg-muted/50 border border-transparent hover:border-border/50 text-muted-foreground hover:text-foreground transition-all rounded-xl"
                 onClick={() => setIsAddingColumn(true)}
               >
                 <Plus className="w-4 h-4" /> Add Column
               </Button>
             ) : (
-              <div className="bg-card p-3 rounded-xl border shadow-sm flex flex-col gap-2">
+              <div className="bg-muted/40 p-3 rounded-xl border border-border/50 shadow-sm flex flex-col gap-2">
                 <Input 
                   autoFocus 
                   value={newColumnName} 
                   onChange={e => setNewColumnName(e.target.value)} 
                   placeholder="Column title..." 
+                  className="bg-background border-border/50"
                   onKeyDown={e => {
                     if (e.key === 'Enter') handleAddColumn();
                     if (e.key === 'Escape') { setIsAddingColumn(false); setNewColumnName(''); }
                   }}
                 />
-                <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => { setIsAddingColumn(false); setNewColumnName(''); }}>Cancel</Button>
-                  <Button size="sm" onClick={handleAddColumn}>Add</Button>
+                <div className="flex justify-end gap-2 mt-1">
+                  <Button variant="ghost" size="sm" className="h-8" onClick={() => { setIsAddingColumn(false); setNewColumnName(''); }}>Cancel</Button>
+                  <Button size="sm" className="h-8" onClick={handleAddColumn}>Add</Button>
                 </div>
               </div>
             )}

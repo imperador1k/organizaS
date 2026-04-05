@@ -234,9 +234,9 @@ export function TimeModal({ isOpen, onClose, item, timeValue, onTimeChange, endT
           >
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleConfirm}
-            disabled={!!timeError || (localEndTime && timeValue >= localEndTime)}
+            disabled={!!timeError || !!(localEndTime && timeValue >= localEndTime)}
             className={cn(
               "flex-1 sm:flex-none",
               hasExistingSchedule 

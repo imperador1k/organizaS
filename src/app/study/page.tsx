@@ -28,8 +28,10 @@ export default function WorkspacePage() {
 
   return (
     <AppLayout>
-      <div className="h-[calc(100dvh-4rem)] md:h-[calc(100vh-1px)] w-full flex bg-background overflow-hidden relative">
-        <WorkspaceSidebar />
+      <div className="h-[calc(100dvh-4rem)] md:h-[calc(100vh-1rem)] w-full flex bg-background overflow-hidden relative border rounded-xl shadow-sm">
+        <div className="hidden md:flex h-full shrink-0">
+          <WorkspaceSidebar />
+        </div>
         <WorkspaceContent />
       </div>
     </AppLayout>

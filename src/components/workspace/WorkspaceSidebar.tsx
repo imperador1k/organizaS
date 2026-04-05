@@ -44,7 +44,7 @@ export function WorkspaceSidebar() {
   };
 
   return (
-    <div className="w-64 border-r border-border h-full bg-muted/20 flex flex-col pt-4">
+    <div className="flex w-64 border-right border-border h-full bg-muted/10 flex-col pt-4 shrink-0">
       {/* Workspace Selector */}
       <div className="px-4 mb-6">
         <div className="flex items-center justify-between mb-2">

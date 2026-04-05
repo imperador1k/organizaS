@@ -96,7 +96,7 @@ export type UserProfile = {
 export type ScheduledItem = {
     id: string;         // A unique ID for the item instance on a specific day, e.g., `habitId-2024-05-21`
     originalId: string; // The original ID of the habit, task, or event
-    type: 'habit' | 'task' | 'event';
+    type: 'habit' | 'task' | 'event' | 'break';
     title: string;
     icon: string;
     time?: string;      // The scheduled start time, e.g., "09:00"

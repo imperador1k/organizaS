@@ -28,7 +28,7 @@ const IframeExtension = Node.create({
         default: null,
       },
       class: {
-        default: 'w-full h-[600px] border-2 border-border/50 shadow-sm rounded-xl my-4',
+        default: 'w-full h-[400px] md:h-[600px] border-2 border-border/50 shadow-sm rounded-xl my-4',
       },
       title: {
         default: 'Document Viewer'
@@ -96,7 +96,7 @@ export function BlockEditor({ pageId }: { pageId: string }) {
         // Antes falhou porque o Cloudinary não estava a colocar o ".pdf" no link. Como já corrigimos isso na API, agora o Google vai ler o PDF maravilhosamente!
         const pdfViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(downloadURL)}&embedded=true`;
         editor?.chain().focus().insertContent(`
-          <iframe src="${pdfViewerUrl}" title="PDF Viewer" class="w-full h-[600px] border-2 border-border/50 shadow-sm rounded-xl my-4"></iframe>
+          <iframe src="${pdfViewerUrl}" title="PDF Viewer" class="w-full h-[400px] md:h-[600px] border-2 border-border/50 shadow-sm rounded-xl my-4"></iframe>
           <p><a href="${downloadURL}" target="_blank" rel="noopener noreferrer" class="text-xs text-muted-foreground underline decoration-muted-foreground/30 hover:text-primary transition-colors">🔗 Abrir em ecrã inteiro / Fazer Download do PDF original</a></p><p></p>
         `).run();
       } else if (
@@ -107,7 +107,7 @@ export function BlockEditor({ pageId }: { pageId: string }) {
         // Microsoft precisava que o ficheiro Cloudinary tivesse um link a terminar em .docx (o que corrigimos na API)
         const wordViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(downloadURL)}`;
         editor?.chain().focus().insertContent(`
-          <iframe src="${wordViewerUrl}" title="Word Document Viewer" class="w-full h-[600px] border-2 border-border/50 shadow-sm rounded-xl my-4"></iframe>
+          <iframe src="${wordViewerUrl}" title="Word Document Viewer" class="w-full h-[400px] md:h-[600px] border-2 border-border/50 shadow-sm rounded-xl my-4"></iframe>
           <p><a href="${downloadURL}" target="_blank" rel="noopener noreferrer" class="text-xs text-muted-foreground underline decoration-muted-foreground/30 hover:text-primary transition-colors">🔗 Abrir / Fazer Download do Ficheiro Original</a></p><p></p>
         `).run();
       } else {
@@ -160,7 +160,7 @@ export function BlockEditor({ pageId }: { pageId: string }) {
     content: pageContent,
     editorProps: {
       attributes: {
-        class: "prose prose-stone dark:prose-invert max-w-none focus:outline-none min-h-[500px] border border-border/50 rounded-xl p-8 bg-card shadow-sm prose-img:rounded-md prose-img:max-h-[500px]"
+        class: "prose prose-stone dark:prose-invert max-w-none focus:outline-none min-h-[500px] border border-border/50 rounded-xl p-4 md:p-8 bg-card shadow-sm prose-img:rounded-md prose-img:max-h-[500px]"
       },
       handleDrop: (view, event, slice, moved) => {
         if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {

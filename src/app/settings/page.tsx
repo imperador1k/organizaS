@@ -251,14 +251,14 @@ export default function SettingsPage() {
   
   const handleLogout = async () => {
     try {
-        const result = await performLogout();
-        if (result.success) {
+        const result = (await performLogout()) as { success: boolean, error?: string } | void;
+        if (result && result.success) {
             router.push('/login');
             toast({
                 title: "Logged Out",
-                description: "You have been successfully logged out and all data has been cleared.",
+                description: "You have been successfully logged out.",
             });
-        } else {
+        } else if (result && result.error) {
             toast({
                 variant: "destructive",
                 title: "Logout Failed",

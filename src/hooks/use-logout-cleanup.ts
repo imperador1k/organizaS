@@ -53,5 +53,5 @@ export const useLogoutCleanup = () => {
     }
   }, [logout]);
 
-  return { performLogout };
+  return { performLogout } as { performLogout: () => Promise<{ success: boolean; error?: string } | void> };
 };

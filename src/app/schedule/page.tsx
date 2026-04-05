@@ -233,7 +233,7 @@ export default function SchedulePage() {
     }
 
     // Check if item already has a schedule (has time)
-    const hasSchedule = item.time && item.time !== '';
+    const hasSchedule = !!(item.time && item.time !== '');
     setHasExistingSchedule(hasSchedule);
     
     // Prepare for modal
