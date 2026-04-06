@@ -11,7 +11,7 @@ import { Plus, Image as ImageIcon, Loader2, PenTool } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useToast } from "@/hooks/use-toast";
 
-export function QuickCaptureButton() {
+export function QuickCaptureButton({ variant = 'floating' }: { variant?: 'floating' | 'headerMobile' }) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -96,10 +96,13 @@ export function QuickCaptureButton() {
     <>
       <Button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-xl shadow-primary/30 z-[100] flex items-center justify-center bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 active:scale-95 transition-all"
+        className={variant === 'floating'
+          ? "hidden md:flex fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-xl shadow-primary/30 z-[100] items-center justify-center bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 active:scale-95 transition-all"
+          : "flex md:hidden h-10 w-10 p-0 rounded-full bg-primary/10 hover:bg-primary/20 text-primary items-center justify-center transition-all shadow-sm"
+        }
         title="Quick Capture (Inbox)"
       >
-        <Plus className="w-6 h-6" />
+        <Plus className={variant === 'headerMobile' ? "w-5 h-5" : "w-6 h-6"} />
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

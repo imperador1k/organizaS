@@ -146,7 +146,7 @@ export function BlockEditor({ pageId }: { pageId: string }) {
         allowBase64: true,
       }),
       LinkExtension.configure({
-        openOnClick: false,
+        openOnClick: true,
         autolink: true,
         defaultProtocol: 'https',
         HTMLAttributes: {

@@ -14,9 +14,11 @@ import {
   BookOpen,
   FileText,
   Inbox,
+  MoreHorizontal
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useAppData, useAuth } from '@/context/AppDataContext';
 import { isSameDay } from 'date-fns';
@@ -24,13 +26,13 @@ import { isSameDay } from 'date-fns';
 
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/inbox', label: 'Inbox', icon: Inbox },
+  { href: '/study', label: 'Workspace', icon: FileText },
   { href: '/goals', label: 'Habits', icon: Target },
   { href: '/todo', label: 'To-Do', icon: ClipboardList },
   { href: '/events', label: 'Events', icon: CalendarDays },
   { href: '/calendar', label: 'Calendar', icon: Calendar },
   { href: '/schedule', label: 'Schedule', icon: Clock },
-  { href: '/study', label: 'Workspace', icon: FileText },
+  { href: '/inbox', label: 'Inbox', icon: Inbox },
 ];
 
 function DesktopNav() {
@@ -72,9 +74,12 @@ function MobileBottomNav() {
     }
   }
 
+  const visibleItems = menuItems.slice(0, 5);
+  const hiddenItems = menuItems.slice(5);
+
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t z-50 flex items-center justify-between px-1 overflow-hidden">
-      {menuItems.map((item) => {
+      {visibleItems.map((item) => {
         const isSelected = pathname === item.href;
         let badgeCount = 0;
         if (item.href === '/todo') badgeCount = getTodayCount('task');
@@ -100,6 +105,36 @@ function MobileBottomNav() {
             </Link>
         )
       })}
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger className={cn(
+          "relative flex flex-col items-center justify-center gap-0.5 transition-colors flex-1 min-w-0 h-full py-1",
+          hiddenItems.some(i => i.href === pathname) ? "text-primary" : "text-muted-foreground hover:text-foreground"
+        )}>
+          <MoreHorizontal className="h-5 w-5 shrink-0" />
+          <span className="text-[10px] leading-tight text-center truncate w-full px-0.5">Mais</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" sideOffset={10} className="w-[180px] mb-1 mr-2 p-2">
+          {hiddenItems.map((item) => {
+            const isSelected = pathname === item.href;
+            
+            return (
+              <DropdownMenuItem key={item.href} asChild>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex w-full items-center gap-3 py-3 px-3 cursor-pointer",
+                    isSelected ? "text-primary bg-primary/10 rounded-md font-medium" : "text-muted-foreground"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span className="text-sm">{item.label}</span>
+                </Link>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </nav>
   );
 }
@@ -107,7 +142,7 @@ function MobileBottomNav() {
 
 import { QuickCaptureButton } from "@/components/workspace/QuickCaptureButton";
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+export function AppLayout({ children, fullWidth = false }: { children: React.ReactNode, fullWidth?: boolean }) {
   const { user, userProfile } = useAuth();
 
   return (
@@ -124,7 +159,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <DesktopNav />
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+             <QuickCaptureButton variant="headerMobile" />
              <Link href="/settings">
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                   <Avatar className="h-10 w-10 border-2 border-transparent hover:border-primary transition-colors">
@@ -136,7 +172,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <main className="flex flex-1 flex-col pb-20 md:pb-0">
-            <div className="mx-auto w-full max-w-7xl p-4 md:p-8">
+            <div className={cn("mx-auto w-full p-4 md:p-8", fullWidth ? "max-w-none" : "max-w-7xl")}>
                  {children}
             </div>
         </main>        

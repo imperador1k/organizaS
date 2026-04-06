@@ -1,7 +1,7 @@
 "use client";
 
 import { useWorkspace } from "@/context/WorkspaceContext";
-import { FileText, SquareKanban, Network, Menu, ArrowLeft } from "lucide-react";
+import { FileText, SquareKanban, Network, Menu, ArrowLeft, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { WorkspaceSidebar } from "./WorkspaceSidebar";
@@ -76,7 +76,8 @@ export function WorkspaceContent() {
             {page.viewType === 'blocks' && <FileText className="mr-1 h-3 w-3" />}
             {page.viewType === 'kanban' && <SquareKanban className="mr-1 h-3 w-3" />}
             {page.viewType === 'mindmap' && <Network className="mr-1 h-3 w-3" />}
-            {page.viewType.charAt(0).toUpperCase() + page.viewType.slice(1)} View
+            {page.viewType === 'folder' && <Folder className="mr-1 h-3 w-3" />}
+            {page.viewType.charAt(0).toUpperCase() + page.viewType.slice(1)} {page.viewType === 'folder' ? '' : 'View'}
           </span>
           <span>
             Last updated: {
@@ -94,6 +95,13 @@ export function WorkspaceContent() {
         {page.viewType === 'blocks' && <BlockEditor pageId={page.id} />}
         {page.viewType === 'kanban' && <KanbanBoard pageId={page.id} />}
         {page.viewType === 'mindmap' && <MindMapEditor pageId={page.id} />}
+        {page.viewType === 'folder' && (
+          <div className="flex flex-col items-center justify-center h-full opacity-50 fade-in">
+            <Folder className="h-16 w-16 mb-4" />
+            <h3 className="text-xl font-medium">This is a Folder</h3>
+            <p className="text-sm mt-2">Use the sidebar to add and manage files inside this folder.</p>
+          </div>
+        )}
       </div>
     </div>
   );

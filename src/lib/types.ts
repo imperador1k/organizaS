@@ -113,7 +113,7 @@ export interface Workspace {
   updatedAt: string;
 }
 
-export type PageViewType = 'blocks' | 'kanban' | 'mindmap';
+export type PageViewType = 'blocks' | 'kanban' | 'mindmap' | 'folder';
 
 export interface WorkspacePage {
   id: string;

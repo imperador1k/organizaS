@@ -43,14 +43,30 @@ export default function InboxPage() {
     return () => unsubscribe();
   }, [user]);
 
-  const handleDelete = async (id: string, silent = false) => {
+  const handleDelete = async (id: string, isMovingToWorkspace = false) => {
     if (!user) return;
     try {
+      if (!isMovingToWorkspace) {
+        // If we are actually deleting it (not just moving it), find the item to delete its attachments from Cloudinary
+        const itemToDelete = items.find(i => i.id === id);
+        if (itemToDelete && itemToDelete.attachments) {
+          for (const att of itemToDelete.attachments) {
+            if (att.url.includes("res.cloudinary.com")) {
+              await fetch('/api/upload', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: att.url })
+              });
+            }
+          }
+        }
+      }
+
       await deleteDoc(doc(db, `users/${user.uid}/inbox`, id));
-      if (!silent) toast({ title: "Deleted", description: "Item removed from inbox." });
+      if (!isMovingToWorkspace) toast({ title: "Deleted", description: "Item removed from inbox." });
     } catch (e) {
       console.error(e);
-      if (!silent) toast({ title: "Error", description: "Could not delete item.", variant: "destructive" });
+      if (!isMovingToWorkspace) toast({ title: "Error", description: "Could not delete item.", variant: "destructive" });
     }
   };
 
