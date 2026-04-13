@@ -2,7 +2,7 @@
 
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { Button } from "@/components/ui/button";
-import { Plus, LayoutTemplate, SquareKanban, Network, FileText, Settings, Trash2, ChevronDown, ChevronRight, FolderPlus, Folder, Edit2 } from "lucide-react";
+import { Plus, LayoutTemplate, SquareKanban, Network, FileText, Settings, Trash2, ChevronDown, ChevronRight, FolderPlus, Folder, Edit2, Presentation } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -153,6 +153,7 @@ export function WorkspaceSidebar() {
             {page.viewType === 'kanban' && <SquareKanban className="mr-2 h-4 w-4 shrink-0 text-amber-500" />}
             {page.viewType === 'mindmap' && <Network className="mr-2 h-4 w-4 shrink-0 text-emerald-500" />}
             {page.viewType === 'folder' && <Folder className="mr-2 h-4 w-4 shrink-0 text-blue-400" />}
+            {page.viewType === 'whiteboard' && <Presentation className="mr-2 h-4 w-4 shrink-0 text-purple-400" />}
             <span className="truncate text-sm">{page.name}</span>
           </div>
 
@@ -278,18 +279,21 @@ export function WorkspaceSidebar() {
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
                   <Input value={newPageName} onChange={(e) => setNewPageName(e.target.value)} placeholder="Page title..." />
-                  <div className="flex space-x-2">
-                    <Button variant={newPageViewType === 'blocks' ? 'default' : 'outline'} onClick={() => setNewPageViewType('blocks')} className="flex-1">
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant={newPageViewType === 'blocks' ? 'default' : 'outline'} onClick={() => setNewPageViewType('blocks')} className="flex-1 min-w-[100px]">
                       <FileText className="mr-2 h-4 w-4" /> Doc
                     </Button>
-                    <Button variant={newPageViewType === 'kanban' ? 'default' : 'outline'} onClick={() => setNewPageViewType('kanban')} className="flex-1">
+                    <Button variant={newPageViewType === 'kanban' ? 'default' : 'outline'} onClick={() => setNewPageViewType('kanban')} className="flex-1 min-w-[100px]">
                       <SquareKanban className="mr-2 h-4 w-4" /> Board
                     </Button>
-                    <Button variant={newPageViewType === 'mindmap' ? 'default' : 'outline'} onClick={() => setNewPageViewType('mindmap')} className="flex-1">
+                    <Button variant={newPageViewType === 'mindmap' ? 'default' : 'outline'} onClick={() => setNewPageViewType('mindmap')} className="flex-1 min-w-[100px]">
                       <Network className="mr-2 h-4 w-4" /> Mindmap
                     </Button>
-                    <Button variant={newPageViewType === 'folder' ? 'default' : 'outline'} onClick={() => setNewPageViewType('folder')} className="flex-1">
+                    <Button variant={newPageViewType === 'folder' ? 'default' : 'outline'} onClick={() => setNewPageViewType('folder')} className="flex-1 min-w-[100px]">
                       <Folder className="mr-2 h-4 w-4" /> Folder
+                    </Button>
+                    <Button variant={newPageViewType === 'whiteboard' ? 'default' : 'outline'} onClick={() => setNewPageViewType('whiteboard')} className="flex-1 min-w-[100px]">
+                      <Presentation className="mr-2 h-4 w-4" /> Whiteboard
                     </Button>
                   </div>
                   <Button onClick={handleCreatePage} className="w-full">Create</Button>
