@@ -383,7 +383,7 @@ export default function EventsPage() {
                         </p>
                         <Button 
                             onClick={handleCreateNew}
-                            className="bg-primary hover:bg-primary/90"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950"
                         >
                             <Plus className="h-4 w-4 mr-2" />
                             Create Your First Event
@@ -395,10 +395,10 @@ export default function EventsPage() {
             {events.length > 0 && (
                 <Button
                     onClick={handleCreateNew}
-                    className="fixed bottom-24 right-6 md:bottom-10 md:right-10 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 z-40 border-4 border-background"
+                    className="fixed bottom-24 right-6 md:bottom-10 md:right-10 h-16 w-16 md:h-20 md:w-20 rounded-full bg-yellow-500 text-yellow-950 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 z-40 border-4 border-background"
                     size="icon"
                 >
-                    <Plus className="h-6 w-6" />
+                    <Plus className="h-6 w-6 md:h-8 md:w-8" />
                     <span className="sr-only">Add new event</span>
                 </Button>
             )}

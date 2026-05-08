@@ -97,8 +97,8 @@ export function QuickCaptureButton({ variant = 'floating' }: { variant?: 'floati
       <Button 
         onClick={() => setIsOpen(true)}
         className={variant === 'floating'
-          ? "hidden md:flex fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-xl shadow-primary/30 z-[100] items-center justify-center bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 active:scale-95 transition-all"
-          : "flex md:hidden h-10 w-10 p-0 rounded-full bg-primary/10 hover:bg-primary/20 text-primary items-center justify-center transition-all shadow-sm"
+          ? "hidden md:flex fixed bottom-10 left-10 w-16 h-16 rounded-full shadow-xl shadow-destructive/30 z-[100] items-center justify-center bg-destructive hover:bg-destructive/90 text-destructive-foreground hover:scale-105 active:scale-95 transition-all"
+          : "flex md:hidden h-10 w-10 p-0 rounded-full bg-destructive/10 hover:bg-destructive/20 text-destructive items-center justify-center transition-all shadow-sm"
         }
         title="Quick Capture (Inbox)"
       >
