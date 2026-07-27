@@ -13,7 +13,7 @@ import { AppDataProvider, useAuth } from '@/context/AppDataContext';
 import { WorkspaceProvider } from '@/context/WorkspaceContext';
 import { AuthInitializer } from '@/components/AuthInitializer';
 import { SessionStatus } from '@/components/SessionStatus';
-import { OneSignalInit } from '@/components/OneSignalInit';
+import { TauriNotificationInit } from '@/components/TauriNotificationInit';
 import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sora' });
@@ -78,7 +78,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
       </head>
       <body className="font-body antialiased">
-        <OneSignalInit />
+        <TauriNotificationInit />
         <AppDataProvider>
           <WorkspaceProvider>
             <ThemeProvider

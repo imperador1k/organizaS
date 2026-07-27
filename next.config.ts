@@ -1,14 +1,16 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Required for Tauri — generates static HTML/JS/CSS in the 'out/' directory
+  output: 'export',
+
   typescript: {
     ignoreBuildErrors: true,
   },
-  /* eslint: {
-    ignoreDuringBuilds: true,
-  }, */
+
+  // SSG does not support server-side image optimization, so we disable it
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

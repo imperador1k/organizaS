@@ -1,3 +1,16 @@
+import { isNativeApp } from '@/lib/tauri-bridge';
+
+/**
+ * WHY absolute URL: In native apps (Tauri or Capacitor SSG mode), there's no local Next.js
+ * server to handle /api/upload. We route uploads to the deployed Vercel endpoint.
+ */
+const UPLOAD_API_URL = '/api/upload';
+const REMOTE_UPLOAD_API_URL = process.env.NEXT_PUBLIC_UPLOAD_API_URL || 'https://organizas.vercel.app/api/upload';
+
+export function getUploadUrl(): string {
+  return isNativeApp() ? REMOTE_UPLOAD_API_URL : UPLOAD_API_URL;
+}
+
 // Helper function to upload image to Cloudinary via API route
 export const uploadImageToCloudinary = async (imageDataUrl: string, userId: string): Promise<string> => {
   try {
@@ -6,7 +19,7 @@ export const uploadImageToCloudinary = async (imageDataUrl: string, userId: stri
       throw new Error('Upload function can only be called from client side');
     }
 
-    const response = await fetch('/api/upload', {
+    const response = await fetch(getUploadUrl(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

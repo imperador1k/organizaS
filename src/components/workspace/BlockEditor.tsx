@@ -16,6 +16,7 @@ import { Loader } from "@/components/Loader";
 import { storage } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useToast } from "@/hooks/use-toast";
+import { getUploadUrl } from "@/lib/cloudinary";
 
 const IframeExtension = Node.create({
   name: 'iframe',
@@ -74,7 +75,7 @@ export function BlockEditor({ pageId }: { pageId: string }) {
         reader.readAsDataURL(file);
       });
       
-      const response = await fetch('/api/upload', {
+      const response = await fetch(getUploadUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

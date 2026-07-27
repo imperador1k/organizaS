@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AppDataContext';
 import { Workspace, WorkspacePage, PageViewType } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { getUploadUrl } from '@/lib/cloudinary';
 
 interface WorkspaceContextProps {
   workspaces: Workspace[];
@@ -133,7 +134,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         if (matches && matches.length > 0) {
           for (const url of new Set(matches)) {
             try {
-              await fetch('/api/upload', {
+              await fetch(getUploadUrl(), {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url })
@@ -221,7 +222,7 @@ const createPage = async (workspaceId: string, name: string, viewType: PageViewT
         if (matches && matches.length > 0) {
           for (const url of new Set(matches)) {
             try {
-              await fetch('/api/upload', {
+              await fetch(getUploadUrl(), {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url })

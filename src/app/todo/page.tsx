@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Archive, ArrowLeft, CheckCircle, CalendarIcon, Paperclip, FileText, Undo2, Edit, Trash2, Tag, ListTree } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { TaskModal } from "@/components/todo/TaskModal";
 import { useForm } from "react-hook-form";
@@ -246,7 +245,7 @@ export default function ToDoPage() {
                           Attachment
                       </h3>
                       <div className="relative w-full aspect-video rounded-md overflow-hidden border">
-                          <Image src={task.attachmentUrl} alt={`Attachment for ${task.title}`} fill style={{ objectFit: 'cover' }} data-ai-hint="attachment image"/>
+                          <img src={task.attachmentUrl} alt={`Attachment for ${task.title}`} className="absolute inset-0 w-full h-full object-cover" />
                       </div>
                   </div>
               )}

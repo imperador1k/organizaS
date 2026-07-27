@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Image as ImageIcon, Loader2, PenTool } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useToast } from "@/hooks/use-toast";
+import { getUploadUrl } from "@/lib/cloudinary";
 
 export function QuickCaptureButton({ variant = 'floating' }: { variant?: 'floating' | 'headerMobile' }) {
   const { user } = useAuth();
@@ -43,7 +44,7 @@ export function QuickCaptureButton({ variant = 'floating' }: { variant?: 'floati
         // For actual Excalidraw files, the backend might need adjusting (currently expects imageDataUrl). 
         // By converting to data URL (FileReader reads as DataURL default if we use readAsDataURL).
         
-        const response = await fetch('/api/upload', {
+        const response = await fetch(getUploadUrl(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

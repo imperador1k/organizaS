@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { getUploadUrl } from "@/lib/cloudinary";
 import { format } from "date-fns";
 
 export default function InboxPage() {
@@ -52,7 +53,7 @@ export default function InboxPage() {
         if (itemToDelete && itemToDelete.attachments) {
           for (const att of itemToDelete.attachments) {
             if (att.url.includes("res.cloudinary.com")) {
-              await fetch('/api/upload', {
+              await fetch(getUploadUrl(), {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: att.url })
