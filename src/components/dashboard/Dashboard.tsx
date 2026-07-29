@@ -2,14 +2,14 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { addDays, format, startOfWeek, isSameDay, getDay, isBefore, startOfDay, isAfter } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { Day, AppEvent, Task, Habit } from '@/lib/types';
+import type { Day, AppEvent, Task, Habit, ScheduledItem } from '@/lib/types';
 import * as Lucide from 'lucide-react';
-import { PlusCircle, ClipboardList, Calendar, Target, Filter, Eye, EyeOff } from 'lucide-react';
+import { PlusCircle, ClipboardList, Calendar, Target, Filter, Eye, EyeOff, Clock } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CustomCheckbox } from './CustomCheckbox';
@@ -39,12 +39,13 @@ export const Icon = ({ name, ...props }: { name: string } & Lucide.LucideProps) 
 };
 
 
-type FilterType = 'habits' | 'tasks' | 'events';
+type FilterType = 'habits' | 'tasks' | 'events' | 'routines';
 
 export function Dashboard() {
-  const { habits, tasks, events, completions, toggleCompletion } = useAppData();
+  const { habits, tasks, events, completions, toggleCompletion, fetchOrCreateDailySchedule } = useAppData();
   const [currentDate] = useState(new Date());
-  const [activeFilters, setActiveFilters] = useState<FilterType[]>(['habits', 'tasks', 'events']);
+  const [activeFilters, setActiveFilters] = useState<FilterType[]>(['habits', 'tasks', 'events', 'routines']);
+  const [weeklyRoutines, setWeeklyRoutines] = useState<Record<string, ScheduledItem[]>>({});
   const isMobile = useIsMobile();
   
   const allTasks = useMemo(() => tasks, [tasks]);
@@ -53,6 +54,21 @@ export function Dashboard() {
     const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
     return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
   }, [currentDate]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchWeekRoutines = async () => {
+      const routines: Record<string, ScheduledItem[]> = {};
+      for (const date of weekDays) {
+        const dateStr = format(date, 'yyyy-MM-dd');
+        const blocks = await fetchOrCreateDailySchedule(date);
+        routines[dateStr] = blocks;
+      }
+      if (isMounted) setWeeklyRoutines(routines);
+    };
+    fetchWeekRoutines();
+    return () => { isMounted = false; };
+  }, [weekDays, fetchOrCreateDailySchedule]);
 
   const getDailyItems = useMemo(() => {
     return (date: Date): CombinedItem[] => {
@@ -83,9 +99,18 @@ export function Dashboard() {
             items.push(...eventsToday);
         }
 
+        // Add routines if filter is active
+        if (activeFilters.includes('routines')) {
+            const dateStr = format(date, 'yyyy-MM-dd');
+            const routinesToday = (weeklyRoutines[dateStr] || [])
+                .map(r => ({ id: r.id, type: 'habit' as const, title: r.title, icon: r.icon }));
+            // We map routines as 'habit' type so the UI treats them securely as checklists
+            items.push(...routinesToday);
+        }
+
         return items.sort((a,b) => a.title.localeCompare(b.title));
     }
-  }, [habits, allTasks, events, activeFilters]);
+  }, [habits, allTasks, events, weeklyRoutines, activeFilters]);
 
   const handleCheck = (itemId: string, date: Date) => {
     const key = `${itemId}-${format(date, 'yyyy-MM-dd')}`;
@@ -107,7 +132,7 @@ export function Dashboard() {
   };
 
   const toggleAllFilters = () => {
-    const allFilters: FilterType[] = ['habits', 'tasks', 'events'];
+    const allFilters: FilterType[] = ['habits', 'tasks', 'events', 'routines'];
     if (activeFilters.length === allFilters.length) {
       // If all are active, keep at least one (habits)
       setActiveFilters(['habits']);
@@ -121,14 +146,18 @@ export function Dashboard() {
   const filterStats = useMemo(() => {
     const weekItems = weekDays.flatMap(day => {
       const dayOfWeek = dayMapping[getDay(day)];
+      const dateStr = format(day, 'yyyy-MM-dd');
+      
       const habitsToday = habits.filter(h => h.schedule.includes(dayOfWeek));
       const tasksToday = allTasks.filter(t => t.dueDate && isSameDay(t.dueDate, day));
       const eventsToday = events.filter(e => isSameDay(e.date, day));
+      const routinesToday = weeklyRoutines[dateStr] || [];
       
       return [
         ...habitsToday.map(h => ({ type: 'habits' as const, id: h.id! })),
         ...tasksToday.map(t => ({ type: 'tasks' as const, id: t.id! })),
-        ...eventsToday.map(e => ({ type: 'events' as const, id: e.id! }))
+        ...eventsToday.map(e => ({ type: 'events' as const, id: e.id! })),
+        ...routinesToday.map(r => ({ type: 'routines' as const, id: r.id! }))
       ];
     });
 
@@ -136,9 +165,10 @@ export function Dashboard() {
       habits: weekItems.filter(item => item.type === 'habits').length,
       tasks: weekItems.filter(item => item.type === 'tasks').length,
       events: weekItems.filter(item => item.type === 'events').length,
+      routines: weekItems.filter(item => item.type === 'routines').length,
       total: weekItems.length
     };
-  }, [weekDays, habits, allTasks, events]);
+  }, [weekDays, habits, allTasks, events, weeklyRoutines]);
 
   const todayStats = useMemo(() => {
     const todayItems = getDailyItems(currentDate);
@@ -153,6 +183,7 @@ export function Dashboard() {
         habits: remainingItems.filter(i => i.type === 'habit').length,
         tasks: remainingItems.filter(i => i.type === 'task').length,
         events: remainingItems.filter(i => i.type === 'event').length,
+        routines: remainingItems.filter(i => i.type === 'habit').length // UI groups them as habits
     }
   }, [currentDate, getDailyItems, completions]);
 
@@ -170,7 +201,7 @@ export function Dashboard() {
             onClick={toggleAllFilters}
             className="ml-auto h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
           >
-            {activeFilters.length === 3 ? (
+            {activeFilters.length === 4 ? (
               <>
                 <EyeOff className="h-3 w-3 mr-1" />
                 Filter
@@ -184,7 +215,32 @@ export function Dashboard() {
           </Button>
         </div>
         
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
+          {/* Mobile Routines Filter */}
+          <button
+            onClick={() => toggleFilter('routines')}
+            className={cn(
+              "flex flex-col items-center gap-1 p-3 rounded-lg text-xs font-medium transition-all duration-200 min-h-[60px]",
+              activeFilters.includes('routines')
+                ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                : "bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            <Clock className="h-4 w-4" />
+            <span>Rotina</span>
+            <Badge 
+              variant="secondary" 
+              className={cn(
+                "h-3 px-1 text-[9px] font-medium",
+                activeFilters.includes('routines')
+                  ? "bg-purple-200 text-purple-800 dark:bg-purple-800 dark:text-purple-200"
+                  : "bg-background text-muted-foreground"
+              )}
+            >
+              {filterStats.routines}
+            </Badge>
+          </button>
+
           {/* Mobile Habits Filter */}
           <button
             onClick={() => toggleFilter('habits')}
@@ -348,6 +404,32 @@ export function Dashboard() {
             </Badge>
           </button>
 
+          {/* Desktop Routines Filter */}
+          <button
+            onClick={() => toggleFilter('routines')}
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200",
+              activeFilters.includes('routines')
+                ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <Clock className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">Rotina</span>
+            <span className="md:hidden">R</span>
+            <Badge 
+              variant="secondary" 
+              className={cn(
+                "h-4 px-1.5 text-[10px] font-medium",
+                activeFilters.includes('routines')
+                  ? "bg-purple-200 text-purple-800 dark:bg-purple-800 dark:text-purple-200"
+                  : "bg-muted text-muted-foreground"
+              )}
+            >
+              {filterStats.routines}
+            </Badge>
+          </button>
+
           <div className="w-px h-6 bg-border mx-2" />
 
           {/* Desktop Show All Toggle */}
@@ -357,7 +439,7 @@ export function Dashboard() {
             onClick={toggleAllFilters}
             className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
           >
-            {activeFilters.length === 3 ? (
+            {activeFilters.length === 4 ? (
               <>
                 <EyeOff className="h-3 w-3 mr-1" />
                 <span className="hidden lg:inline">Filter</span>

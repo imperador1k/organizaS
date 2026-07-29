@@ -101,6 +101,8 @@ export type ScheduledItem = {
     icon: string;
     time?: string;      // The scheduled start time, e.g., "09:00"
     endTime?: string;  // The scheduled end time, e.g., "10:00"
+    templateOriginId?: string; // ID of the original template block
+    clonedFromTemplate?: boolean; // Whether this instance was cloned from the master routine
 };
 
 // --- WORKSPACE & NOTION-LIKE ARCHITECTURE TYPES ---

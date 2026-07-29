@@ -14,7 +14,8 @@ import {
   BookOpen,
   FileText,
   Inbox,
-  MoreHorizontal
+  MoreHorizontal,
+  Map
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -26,7 +27,7 @@ import { isSameDay } from 'date-fns';
 
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/study', label: 'Workspace', icon: FileText },
+  { href: '/roadmap', label: 'Roadmap', icon: Map },
   { href: '/goals', label: 'Habits', icon: Target },
   { href: '/todo', label: 'To-Do', icon: ClipboardList },
   { href: '/events', label: 'Events', icon: CalendarDays },

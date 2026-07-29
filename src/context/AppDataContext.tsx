@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useMemo, useCallback } from 'react';
 import { Habit, Task, AppEvent, UserProfile, ScheduledItem, Break } from '@/lib/types';
+import { baseRoutine } from '@/lib/plan';
 import { auth, db } from '@/lib/firebase';
 import { User, onAuthStateChanged, signOut, updateProfile as updateAuthProfile } from 'firebase/auth';
 import { usePersistentAuth } from '@/hooks/use-persistent-auth';
@@ -22,6 +23,13 @@ import {
 import { uploadImageToCloudinary } from '@/lib/cloudinary';
 import { format } from 'date-fns';
 
+function calculateEndTime(startTime: string, durationHours: number): string {
+  const [hours, minutes] = startTime.split(':').map(Number);
+  const totalMinutes = hours * 60 + minutes + (durationHours * 60);
+  const endHours = Math.floor(totalMinutes / 60) % 24;
+  const endMins = Math.round(totalMinutes % 60);
+  return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
+}
 // Auth Context
 interface AuthContextType {
   user: User | null;
@@ -68,6 +76,20 @@ interface AppDataContextType {
   toggleCompletion: (itemId: string, date: Date) => Promise<void>;
   updateScheduledItemTime: (item: ScheduledItem, date: Date, time: string | null, endTime?: string | null) => Promise<void>;
   duplicateScheduledItem: (item: ScheduledItem, date: Date, time: string, endTime?: string) => Promise<void>;
+  
+  // Novas funções da Arquitetura Kanban (Templates vs Instâncias)
+  fetchOrCreateDailySchedule: (date: Date) => Promise<ScheduledItem[]>;
+  updateDailyScheduleBlock: (date: Date, blockId: string, updates: Partial<ScheduledItem>) => Promise<void>;
+  deleteDailyScheduleBlock: (date: Date, blockId: string) => Promise<void>;
+  addDailyScheduleBlock: (date: Date, block: ScheduledItem) => Promise<void>;
+  
+  // Gestão de Master Routines (Ecrã Templates)
+  routineTemplates: Record<string, ScheduledItem[]>;
+  seedRoutineTemplates: () => Promise<void>;
+  updateRoutineTemplateBlock: (dayOfWeek: string, blockId: string, updates: Partial<ScheduledItem>) => Promise<void>;
+  addRoutineTemplateBlock: (dayOfWeek: string, block: ScheduledItem) => Promise<void>;
+  deleteRoutineTemplateBlock: (dayOfWeek: string, blockId: string) => Promise<void>;
+  forceSyncTemplateToDate: (date: Date) => Promise<ScheduledItem[]>;
 }
 
 const AppDataContext = createContext<AppDataContextType | undefined>(undefined);
@@ -124,6 +146,7 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
   const [events, setEvents] = useState<AppEvent[]>([]);
   const [breaks, setBreaks] = useState<Break[]>([]);
   const [completions, setCompletions] = useState<Record<string, boolean>>({});
+  const [routineTemplates, setRoutineTemplates] = useState<Record<string, ScheduledItem[]>>({});
   
   // Sincronizar com o hook de autenticação persistente
   useEffect(() => {
@@ -187,7 +210,7 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribes: (() => void)[] = [];
     
     let activeListeners = 0;
-    const totalListeners = 5; // habits, tasks, events, completions, breaks
+    const totalListeners = 6; // habits, tasks, events, completions, breaks, routine_templates
 
     const onSubscribed = () => {
         activeListeners++;
@@ -212,6 +235,19 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     setupSubscription('tasks', setTasks);
     setupSubscription('events', setEvents);
     setupSubscription('breaks', setBreaks);
+
+    const templatesQuery = collection(db, 'users', user.uid, 'routine_templates');
+    const unsubscribeTemplates = onSnapshot(templatesQuery, (snapshot) => {
+        if(isMounted) {
+            const templatesMap: Record<string, ScheduledItem[]> = {};
+            snapshot.docs.forEach(doc => {
+                templatesMap[doc.id] = doc.data().blocks as ScheduledItem[];
+            });
+            setRoutineTemplates(templatesMap);
+        }
+    }, (error) => console.error(`Error fetching routine_templates:`, error));
+    unsubscribes.push(unsubscribeTemplates);
+    onSubscribed();
 
     const completionsQuery = collection(db, 'users', user.uid, 'completions');
     const unsubscribeCompletions = onSnapshot(completionsQuery, (snapshot) => {
@@ -547,6 +583,191 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
+  // Kanban Architecture: Daily Schedules
+  const fetchOrCreateDailySchedule = useCallback(async (date: Date) => {
+    if (!user) return [];
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dayOfWeek = date.getDay().toString();
+    const dailyRef = doc(db, 'users', user.uid, 'daily_schedules', dateStr);
+    const dailySnap = await getDoc(dailyRef);
+
+    if (dailySnap.exists()) {
+      return (dailySnap.data().blocks || []) as ScheduledItem[];
+    }
+
+    // Clona do Template Mestre
+    const templateRef = doc(db, 'users', user.uid, 'routine_templates', dayOfWeek);
+    const templateSnap = await getDoc(templateRef);
+    let instantiatedBlocks: ScheduledItem[] = [];
+
+    if (templateSnap.exists()) {
+      const templateBlocks = (templateSnap.data().blocks || []) as ScheduledItem[];
+      instantiatedBlocks = templateBlocks.map(block => ({
+        ...block,
+        id: `inst-${Math.random().toString(36).substr(2, 9)}`,
+        templateOriginId: block.id,
+        clonedFromTemplate: true
+      }));
+    }
+
+    const newDailySchedule = {
+      date: dateStr,
+      clonedFromTemplate: true,
+      blocks: instantiatedBlocks,
+      createdAt: Timestamp.now()
+    };
+
+    await setDoc(dailyRef, dataToFirestore(newDailySchedule));
+    return instantiatedBlocks;
+  }, [user]);
+
+  const forceSyncTemplateToDate = useCallback(async (date: Date) => {
+    if (!user) return [];
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dayOfWeek = date.getDay().toString();
+    const dailyRef = doc(db, 'users', user.uid, 'daily_schedules', dateStr);
+    
+    // Buscar Template Mestre
+    const templateRef = doc(db, 'users', user.uid, 'routine_templates', dayOfWeek);
+    const templateSnap = await getDoc(templateRef);
+    let instantiatedBlocks: ScheduledItem[] = [];
+
+    if (templateSnap.exists()) {
+      const templateBlocks = (templateSnap.data().blocks || []) as ScheduledItem[];
+      instantiatedBlocks = templateBlocks.map(block => ({
+        ...block,
+        id: `inst-${Math.random().toString(36).substr(2, 9)}`,
+        templateOriginId: block.id,
+        clonedFromTemplate: true
+      }));
+    }
+
+    const newDailySchedule = {
+      date: dateStr,
+      clonedFromTemplate: true,
+      blocks: instantiatedBlocks,
+      createdAt: Timestamp.now(),
+      lastModified: Timestamp.now()
+    };
+
+    await setDoc(dailyRef, dataToFirestore(newDailySchedule));
+    return instantiatedBlocks;
+  }, [user]);
+
+  const updateDailyScheduleBlock = useCallback(async (date: Date, blockId: string, updates: Partial<ScheduledItem>) => {
+    if (!user) return;
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dailyRef = doc(db, 'users', user.uid, 'daily_schedules', dateStr);
+    const dailySnap = await getDoc(dailyRef);
+    
+    if (dailySnap.exists()) {
+      const data = dailySnap.data();
+      const blocks = (data.blocks || []) as ScheduledItem[];
+      const updatedBlocks = blocks.map(b => b.id === blockId ? { ...b, ...updates } : b);
+      await updateDoc(dailyRef, { blocks: updatedBlocks, lastModified: Timestamp.now() });
+    }
+  }, [user]);
+
+  const deleteDailyScheduleBlock = useCallback(async (date: Date, blockId: string) => {
+    if (!user) return;
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dailyRef = doc(db, 'users', user.uid, 'daily_schedules', dateStr);
+    const dailySnap = await getDoc(dailyRef);
+    
+    if (dailySnap.exists()) {
+      const data = dailySnap.data();
+      const blocks = (data.blocks || []) as ScheduledItem[];
+      const updatedBlocks = blocks.filter(b => b.id !== blockId);
+      await updateDoc(dailyRef, { blocks: updatedBlocks, lastModified: Timestamp.now() });
+    }
+  }, [user]);
+
+  const addDailyScheduleBlock = useCallback(async (date: Date, block: ScheduledItem) => {
+    if (!user) return;
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dailyRef = doc(db, 'users', user.uid, 'daily_schedules', dateStr);
+    const dailySnap = await getDoc(dailyRef);
+    
+    if (dailySnap.exists()) {
+      const data = dailySnap.data();
+      const blocks = (data.blocks || []) as ScheduledItem[];
+      blocks.push(block);
+      await updateDoc(dailyRef, { blocks, lastModified: Timestamp.now() });
+    }
+  }, [user]);
+
+  // Gestão de Master Routines (Templates)
+  const seedRoutineTemplates = useCallback(async () => {
+    if (!user) return;
+    const mapDayToDayOfWeek: Record<string, number[]> = {
+      "Seg-Qui": [1, 2, 3, 4], // 1=Segunda, 4=Quinta
+      "Sexta": [5],
+      "Sábado": [6],
+      "Domingo": [0]
+    };
+  
+    for (const [dayType, blocks] of Object.entries(baseRoutine)) {
+      const daysOfWeek = mapDayToDayOfWeek[dayType];
+      
+      const kanbanBlocks: ScheduledItem[] = blocks.map(b => ({
+        id: b.id,
+        originalId: b.id,
+        type: 'habit',
+        title: b.title,
+        icon: 'Target',
+        time: b.slot,
+        endTime: calculateEndTime(b.slot, b.duration)
+      }));
+  
+      for (const day of daysOfWeek) {
+        const templateRef = doc(db, 'users', user.uid, 'routine_templates', day.toString());
+        await setDoc(templateRef, {
+          dayOfWeek: day,
+          blocks: kanbanBlocks
+        });
+      }
+    }
+  }, [user]);
+
+  const updateRoutineTemplateBlock = useCallback(async (dayOfWeek: string, blockId: string, updates: Partial<ScheduledItem>) => {
+    if (!user) return;
+    const templateRef = doc(db, 'users', user.uid, 'routine_templates', dayOfWeek);
+    const templateSnap = await getDoc(templateRef);
+    
+    if (templateSnap.exists()) {
+      const data = templateSnap.data();
+      const blocks = (data.blocks || []) as ScheduledItem[];
+      const updatedBlocks = blocks.map(b => b.id === blockId ? { ...b, ...updates } : b);
+      await updateDoc(templateRef, { blocks: updatedBlocks, lastModified: Timestamp.now() });
+    }
+  }, [user]);
+
+  const addRoutineTemplateBlock = useCallback(async (dayOfWeek: string, block: ScheduledItem) => {
+    if (!user) return;
+    const templateRef = doc(db, 'users', user.uid, 'routine_templates', dayOfWeek);
+    const templateSnap = await getDoc(templateRef);
+    
+    if (templateSnap.exists()) {
+      const data = templateSnap.data();
+      const blocks = (data.blocks || []) as ScheduledItem[];
+      blocks.push(block);
+      await updateDoc(templateRef, { blocks, lastModified: Timestamp.now() });
+    }
+  }, [user]);
+
+  const deleteRoutineTemplateBlock = useCallback(async (dayOfWeek: string, blockId: string) => {
+    if (!user) return;
+    const templateRef = doc(db, 'users', user.uid, 'routine_templates', dayOfWeek);
+    const templateSnap = await getDoc(templateRef);
+    
+    if (templateSnap.exists()) {
+      const data = templateSnap.data();
+      const blocks = (data.blocks || []) as ScheduledItem[];
+      const updatedBlocks = blocks.filter(b => b.id !== blockId);
+      await updateDoc(templateRef, { blocks: updatedBlocks, lastModified: Timestamp.now() });
+    }
+  }, [user]);
+
   const authValue = useMemo(() => ({ 
     user, 
     userProfile, 
@@ -580,11 +801,23 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     deleteBreak,
     updateScheduledItemTime,
     duplicateScheduledItem,
+    fetchOrCreateDailySchedule,
+    updateDailyScheduleBlock,
+    deleteDailyScheduleBlock,
+    addDailyScheduleBlock,
+    routineTemplates,
+    seedRoutineTemplates,
+    updateRoutineTemplateBlock,
+    addRoutineTemplateBlock,
+    deleteRoutineTemplateBlock,
+    forceSyncTemplateToDate,
   }), [
     habits, tasks, events, breaks, completions, 
     toggleCompletion, addHabit, updateHabit, deleteHabit, 
     addTask, updateTask, deleteTask, addEvent, updateEvent, 
-    deleteEvent, completeEvent, addBreak, updateBreak, deleteBreak, updateScheduledItemTime, duplicateScheduledItem
+    deleteEvent, completeEvent, addBreak, updateBreak, deleteBreak, updateScheduledItemTime, duplicateScheduledItem,
+    fetchOrCreateDailySchedule, updateDailyScheduleBlock, deleteDailyScheduleBlock, addDailyScheduleBlock,
+    routineTemplates, seedRoutineTemplates, updateRoutineTemplateBlock, addRoutineTemplateBlock, deleteRoutineTemplateBlock, forceSyncTemplateToDate
   ]);
 
 

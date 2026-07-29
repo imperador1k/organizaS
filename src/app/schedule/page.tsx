@@ -8,7 +8,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, GripVertical, LayoutGrid, List, Clock, X, PlusCircle, Edit, Plus } from 'lucide-react';
+import { Calendar as CalendarIcon, GripVertical, LayoutGrid, List, Clock, X, PlusCircle, Edit, Plus, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Icon } from '@/components/dashboard/Dashboard';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -23,6 +23,7 @@ import { ScheduledItem, Break, BreakSchema } from '@/lib/types';
 import { BreakSheet } from '@/components/schedule/BreakSheet';
 import { TimeModal } from '@/components/schedule/TimeModal';
 import { ScheduleItemModal } from '@/components/schedule/ScheduleItemModal';
+import { RoutineTemplatesView } from '@/components/schedule/RoutineTemplatesView';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -49,17 +50,28 @@ const getPlannerBucket = (time: string | undefined): keyof PlannerColumns | null
 
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [view, setView] = useState<'timeline' | 'planner' | 'timeline-view'>('timeline');
-  const { habits, tasks, events, breaks, updateScheduledItemTime, duplicateScheduledItem, deleteBreak } = useAppData();
+  const [view, setView] = useState<'timeline' | 'planner' | 'timeline-view' | 'templates'>('timeline');
+  const { habits, tasks, events, breaks, updateScheduledItemTime, duplicateScheduledItem, deleteBreak, fetchOrCreateDailySchedule, updateDailyScheduleBlock, forceSyncTemplateToDate } = useAppData();
 
   const [unscheduled, setUnscheduled] = useState<ScheduledItem[]>([]);
   const [scheduledItems, setScheduledItems] = useState<Record<string, ScheduledItem[]>>({});
   const [plannerColumns, setPlannerColumns] = useState<PlannerColumns>({ morning: [], afternoon: [], evening: [] });
+  const [dailyRoutineBlocks, setDailyRoutineBlocks] = useState<ScheduledItem[]>([]);
   
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      let isMounted = true;
+      fetchOrCreateDailySchedule(selectedDate).then(blocks => {
+        if (isMounted) setDailyRoutineBlocks(blocks);
+      });
+      return () => { isMounted = false; };
+    }
+  }, [selectedDate, isClient, fetchOrCreateDailySchedule]);
 
   const [isTimeModalOpen, setIsTimeModalOpen] = useState(false);
   const [itemToSchedule, setItemToSchedule] = useState<ScheduledItem | null>(null);
@@ -160,6 +172,12 @@ export default function SchedulePage() {
        }
     });
 
+    // --- NOVA ARQUITETURA KANBAN ---
+    // Injetar blocos do Daily Schedule (Clonados da Rotina Mestre)
+    dailyRoutineBlocks.forEach(block => {
+        allItemsForDay.push(block);
+    });
+
     const newUnscheduled: ScheduledItem[] = [];
     const newScheduled: Record<string, ScheduledItem[]> = {};
     const newPlanner: PlannerColumns = { morning: [], afternoon: [], evening: [] };
@@ -186,7 +204,7 @@ export default function SchedulePage() {
     setUnscheduled(newUnscheduled);
     setScheduledItems(newScheduled);
     setPlannerColumns(newPlanner);
-  }, [selectedDate, habits, tasks, events]);
+  }, [selectedDate, habits, tasks, events, dailyRoutineBlocks]);
 
   useEffect(() => {
     if (isClient) {
@@ -278,7 +296,11 @@ export default function SchedulePage() {
       await duplicateScheduledItem(itemToSchedule, selectedDate, timeValue, endTimeValue);
     } else {
       // Move the original item
-      await updateScheduledItemTime(itemToSchedule, selectedDate, timeValue, endTimeValue);
+      if (itemToSchedule.clonedFromTemplate) {
+        await updateDailyScheduleBlock(selectedDate, itemToSchedule.id, { time: timeValue, endTime: endTimeValue });
+      } else {
+        await updateScheduledItemTime(itemToSchedule, selectedDate, timeValue, endTimeValue);
+      }
     }
     
     setIsTimeModalOpen(false);
@@ -288,7 +310,11 @@ export default function SchedulePage() {
   };
 
   const handleScheduleItem = async (item: ScheduledItem, startTime: string, endTime: string) => {
-    await updateScheduledItemTime(item, selectedDate, startTime, endTime);
+    if (item.clonedFromTemplate) {
+      await updateDailyScheduleBlock(selectedDate, item.id, { time: startTime, endTime: endTime });
+    } else {
+      await updateScheduledItemTime(item, selectedDate, startTime, endTime);
+    }
   };
 
   const openScheduleModal = (hourKey?: string, defaultTime?: string) => {
@@ -304,7 +330,11 @@ export default function SchedulePage() {
   };
   
   const handleUnscheduleItem = (itemToUnschedule: ScheduledItem) => {
-    updateScheduledItemTime(itemToUnschedule, selectedDate, null, null);
+    if (itemToUnschedule.clonedFromTemplate) {
+      updateDailyScheduleBlock(selectedDate, itemToUnschedule.id, { time: undefined, endTime: undefined });
+    } else {
+      updateScheduledItemTime(itemToUnschedule, selectedDate, null, null);
+    }
   };
   
   const handleAddBreak = () => {
@@ -1065,7 +1095,21 @@ export default function SchedulePage() {
                     <p className="text-muted-foreground mt-1">Organize your day by assigning items to time slots.</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <ToggleGroup type="single" value={view} onValueChange={(value: 'timeline' | 'planner' | 'timeline-view') => value && setView(value)}>
+                    {view !== 'templates' && (
+                      <Button 
+                        onClick={async () => {
+                          const blocks = await forceSyncTemplateToDate(selectedDate);
+                          setDailyRoutineBlocks(blocks);
+                        }} 
+                        variant="default"
+                        size="sm"
+                        className="bg-primary/90 hover:bg-primary shadow-sm"
+                      >
+                        <Target className="mr-2 h-4 w-4" />
+                        Aplicar Rotina
+                      </Button>
+                    )}
+                    <ToggleGroup type="single" value={view} onValueChange={(value: 'timeline' | 'planner' | 'timeline-view' | 'templates') => value && setView(value)}>
                         <ToggleGroupItem value="timeline" aria-label="Timeline view">
                             <List className="h-4 w-4" />
                         </ToggleGroupItem>
@@ -1074,6 +1118,9 @@ export default function SchedulePage() {
                         </ToggleGroupItem>
                         <ToggleGroupItem value="timeline-view" aria-label="Modern Timeline view">
                             <Clock className="h-4 w-4" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="templates" aria-label="Master Routines view">
+                            <Target className="h-4 w-4" />
                         </ToggleGroupItem>
                     </ToggleGroup>
                     <Popover>
@@ -1102,26 +1149,29 @@ export default function SchedulePage() {
             </div>
 
             <div className="flex flex-col gap-8">
-                <Card className="h-fit">
-                    <CardHeader>
-                    <CardTitle>Unscheduled ({unscheduled.length})</CardTitle>
-                    </CardHeader>
-                    <DroppableSlot droppableId="unscheduled" className="p-6 pt-0 min-h-[10rem] space-y-3">
-                        {unscheduled.map((item, index) => (
-                            <DraggableItem key={item.id} item={item} index={index} sourceId="unscheduled" />
-                        ))}
-                        {unscheduled.length === 0 && (
-                            <div className="text-center text-muted-foreground py-16">
-                                <p>Nothing left to schedule for this day.</p>
-                            </div>
-                        )}
-                    </DroppableSlot>
-                </Card>
+                {view !== 'templates' && (
+                  <Card className="h-fit">
+                      <CardHeader>
+                      <CardTitle>Unscheduled ({unscheduled.length})</CardTitle>
+                      </CardHeader>
+                      <DroppableSlot droppableId="unscheduled" className="p-6 pt-0 min-h-[10rem] space-y-3">
+                          {unscheduled.map((item, index) => (
+                              <DraggableItem key={item.id} item={item} index={index} sourceId="unscheduled" />
+                          ))}
+                          {unscheduled.length === 0 && (
+                              <div className="text-center text-muted-foreground py-16">
+                                  <p>Nothing left to schedule for this day.</p>
+                              </div>
+                          )}
+                      </DroppableSlot>
+                  </Card>
+                )}
 
                 <div className="space-y-2">
                     {view === 'timeline' && <TimelineView />}
                     {view === 'planner' && <PlannerView />}
                     {view === 'timeline-view' && <ModernTimelineView />}
+                    {view === 'templates' && <RoutineTemplatesView />}
                 </div>
             </div>
         </div>
