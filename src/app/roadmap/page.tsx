@@ -1,16 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { curriculum, playbooks, commandments, goals, baseRoutine, DayType } from '@/lib/plan';
+import { curriculum, playbooks, commandments, goals, baseRoutine, DayType, resources, mentorPrompt } from '@/lib/plan';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle2, Target, BookOpen, AlertCircle, Code2, Globe, Clock } from 'lucide-react';
+import { CheckCircle2, Target, BookOpen, AlertCircle, Code2, Globe, Clock, Library, Bot, Copy, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 import { AppLayout } from '@/components/AppLayout';
 
 export default function RoadmapPage() {
   const [activeTab, setActiveTab] = useState('timeline');
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(mentorPrompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Estamos no "Mês 0" (Agosto 2026) da Pré-Época!
   const currentMonthIndex = 0; 
@@ -31,10 +39,12 @@ export default function RoadmapPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-8 h-auto">
-            <TabsTrigger value="timeline" className="py-2">Timeline do Plano</TabsTrigger>
-            <TabsTrigger value="rotina" className="py-2">Rotina Semanal</TabsTrigger>
-            <TabsTrigger value="manifesto" className="py-2">Manifesto & Regras</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8 h-auto gap-1">
+            <TabsTrigger value="timeline" className="py-2">Timeline</TabsTrigger>
+            <TabsTrigger value="rotina" className="py-2">Rotina</TabsTrigger>
+            <TabsTrigger value="manifesto" className="py-2">Regras</TabsTrigger>
+            <TabsTrigger value="recursos" className="py-2">Recursos</TabsTrigger>
+            <TabsTrigger value="mentor" className="py-2">Mentor AI</TabsTrigger>
           </TabsList>
 
           <TabsContent value="timeline" className="space-y-8">
@@ -176,6 +186,63 @@ export default function RoadmapPage() {
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="recursos" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              {resources.map((res, idx) => (
+                <Card key={idx} className="border-primary/10">
+                  <CardHeader className="bg-secondary/30 pb-4">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Library className="h-4 w-4 text-primary" />
+                      {res.category}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <ul className="space-y-4">
+                      {res.items.map((item, i) => (
+                        <li key={i} className="flex gap-3">
+                          <div className="mt-1 flex-shrink-0">
+                            {item.type === 'book' ? <BookOpen className="h-4 w-4 text-muted-foreground" /> : <Globe className="h-4 w-4 text-muted-foreground" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground leading-tight">{item.title}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{item.author}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="mentor" className="space-y-6">
+            <Card className="border-primary/20">
+              <CardHeader className="bg-primary/5 flex flex-row items-center justify-between pb-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Bot className="h-5 w-5 text-primary" />
+                    Prompt do Mentor de Engenharia
+                  </CardTitle>
+                  <CardDescription className="mt-1.5">
+                    Copia este texto e cola no ChatGPT ou Claude para reajustar o teu plano estrategicamente. Não te esqueças de preencher a secção "A Situação Atual".
+                  </CardDescription>
+                </div>
+                <Button onClick={handleCopy} variant="default" className="flex items-center gap-2">
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copied ? 'Copiado!' : 'Copiar'}
+                </Button>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="bg-secondary/50 p-6 rounded-md border border-border/50 overflow-x-auto">
+                  <pre className="text-sm text-muted-foreground whitespace-pre-wrap font-mono leading-relaxed">
+                    {mentorPrompt}
+                  </pre>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

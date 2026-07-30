@@ -5,9 +5,9 @@
   "version": "0.1.0",
   "build": {
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "",
     "devUrl": "http://localhost:9002",
-    "frontendDist": "../out"
+    "frontendDist": "https://organiza-s.vercel.app/"
   },
   "app": {
     "withGlobalTauri": true,

@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'OrganizaS',
   webDir: 'out',
   server: {
-    // Uses https scheme on Android to ensure compatibility with Firebase and CORS
+    url: 'https://organiza-s.vercel.app/',
     androidScheme: 'https',
   },
 };

@@ -26,7 +26,7 @@ export const baseRoutine: Record<DayType, RoutineBlock[]> = {
     { id: "sex4", slot: "14:00", duration: 6, title: "Viagem + Off-Screen", category: "Outro" },
   ],
   "Sábado": [
-    { id: "sab1", slot: "09:00", duration: 3, title: "Estudo Livre Dirigido", category: "Backend" },
+    { id: "sab1", slot: "09:00", duration: 3, title: "Sábado Hard Mode (Pedreiro Core)", category: "Backend" },
     { id: "sab2", slot: "12:00", duration: 10, title: "Livre / Projetos AI passivos", category: "Família/Livre" },
   ],
   "Domingo": [
@@ -39,411 +39,448 @@ export const curriculum = [
     id: "mes-1",
     month: "MÊS 1",
     date: "SETEMBRO 2026",
-    phase: "Fundação",
+    phase: "Fundação & Raio-X",
     technical: [
-      "TypeScript do zero — Total TypeScript (Matt Pocock), Partes I-III: setup, tipos essenciais, uniões, narrowing, objetos e classes",
-      "Understanding TypeScript (Schwarzmüller) — secções de generics e utility types em paralelo",
-      "Git a sério: branches, rebase, PRs, commits atómicos",
-      "Linux/terminal: navegação, permissões, processos"
+      "TypeScript do zero — Total TypeScript (Matt Pocock). Parte I-III. Código cravado nas unhas.",
+      "Entendimento profundo: Generics e Utility Types. Vais usar o 'Understanding TypeScript' (Schwarzmüller).",
+      "Git a sério (Sem UI): branches, rebase interactivo, PRs. Se quebrares a árvore, arranja-a pelo terminal.",
+      "Linux/Terminal: Navegação, permissões chmod/chown, processos (kill, htop, grep)."
     ],
     product: [
-      "Wireframes low-fi (papel ou Figma) — define o que o MVP NÃO vai ter ainda",
-      "Desenho do schema inicial: users, courses, lessons, exercises, progress"
+      "FARO (Modo Negócio): IA ligada ao máximo. Gera wireframes e schemas base no Cursor/ChatGPT.",
+      "Faro Schema inicial: users, courses, lessons, exercises, progress."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Cria um CLI em Node.js puro que leia um TXT e conte palavras. Usa Vim Adventures durante 30 mins para aquecer antes de bater código."
     ],
     languages: [
       "Inglês ativo diário (Imersão e Consumo).",
-      "INÍCIO: Francês via Language Laddering (a partir do Inglês) - 30m/dia."
+      "Francês via Language Laddering (a partir do Inglês) - 30m/dia."
     ],
     successCriteria: [
-      "TypeScript Handbook lido de fio a pavio",
-      "10+ exercícios de Total TypeScript resolvidos sem copiar",
-      "Reunião com contabilista marcada/realizada",
-      "Constituir empresa esta semana"
+      "TypeScript Handbook lido de fio a pavio.",
+      "10+ exercícios de Total TypeScript resolvidos sem copiar.",
+      "Constituir empresa e garantir contabilista."
     ]
   },
   {
     id: "mes-2",
     month: "MÊS 2",
-    date: "SETEMBRO 2026",
-    phase: "Fundação",
+    date: "OUTUBRO 2026",
+    phase: "Servidores Nativos & Arquitetura",
     technical: [
-      "Node.js + Express puro — entender middleware/routing antes do NestJS abstrair isso",
-      "PostgreSQL local + Docker: primeira imagem, primeiras migrations",
-      "The Art of PostgreSQL (Fontaine) — capítulos de fundações SQL"
+      "Node.js + Express puro — Entende o Event Loop antes do NestJS te dar biberão.",
+      "PostgreSQL local + Docker: Escreve o teu primeiro docker-compose.yml à mão.",
+      "The Art of PostgreSQL — Lê os capítulos de fundações. As queries lentas são o teu maior inimigo.",
+      "Use The Index Luke — Lê sobre performance SQL. Índices salvam aplicações."
     ],
     product: [
-      "API esqueleto: rotas básicas definidas, sem lógica de negócio ainda",
-      "Proof of Concept navegável para usar no pitch deck"
+      "FARO: Usa IA para gerar a API esqueleto em Express rapidamente e criar um Proof of Concept (Pitch Deck)."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Vai ao repo 'codecrafters-io/build-your-own-x'. Escolhe 'Build your own HTTP server'. Aprende a fazer parsing de raw TCP streams em Node."
     ],
     languages: [
-      "1ª sessão de conversação real (tutor ou language exchange)"
+      "1ª sessão de conversação real em Inglês.",
+      "Manutenção de Francês (Laddering)."
     ],
     successCriteria: [
-      "CRUD funcional em Express puro",
-      "Schema PostgreSQL com migrations versionadas",
-      "Pitch deck v1 completo (10 slides)"
+      "CRUD funcional em Express puro.",
+      "Schema PostgreSQL com migrations puras em SQL.",
+      "Servidor HTTP barebones construído ao sábado."
     ]
   },
   {
     id: "mes-3",
     month: "MÊS 3",
-    date: "OUTUBRO 2026",
-    phase: "Fundação — LeetCode Arranca",
+    date: "NOVEMBRO 2026",
+    phase: "NestJS & Engenharia Base",
     technical: [
-      "Intro to NestJS (Scrimba, grátis) — arranque interativo",
-      "NestJS: The Complete Developer's Guide (Stephen Grider) — módulos, controllers, DI",
-      "LeetCode arranca hoje. Lista Blind 75 — Arrays, Strings, HashMaps. 1 fácil/dia, solução em papel antes de escreveres código"
+      "Intro to NestJS (Scrimba) + The Complete Developer's Guide (Grider). Aprende Injeção de Dependências a sério.",
+      "The Twelve-Factor App — Lê e memoriza os 12 princípios de microserviços. É lei.",
+      "LeetCode arranca hoje. Lista Blind 75 (Arrays, HashMaps). Pratica no Exercism para teres reviews humanas cruéis."
     ],
     product: [
-      "Migração de Express -> NestJS",
-      "Primeiro CRUD funcional em NestJS (users + courses)"
+      "FARO: Migra o código Express para NestJS usando IA para acelerar o boilerplate. Mantém foco em faturar e evoluir o modelo de dados."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Cria um mini-ORM em TS. Pegas num objeto { name: 'X' } e devolves 'INSERT INTO users...'. Depois, vai jogar SQL Murder Mystery para descontrair a mente com joins."
     ],
     languages: [
-      "INÍCIO: Espanhol via Language Laddering - intercalar com Francês."
+      "Espanhol via Language Laddering - 30m/dia."
     ],
     successCriteria: [
-      "20+ LeetCode fáceis resolvidos sem ajuda de IA",
-      "1 módulo NestJS completo e testado manualmente",
-      "Candidatura FITEC submetida"
+      "20+ LeetCode fáceis resolvidos no Exercism.",
+      "Módulo Auth do NestJS a correr.",
+      "Candidatura FITEC submetida com pitch deck sólido."
     ]
   },
   {
     id: "mes-4",
     month: "MÊS 4",
-    date: "NOVEMBRO 2026",
-    phase: "Core Backend Mastery",
+    date: "DEZEMBRO 2026",
+    phase: "Segurança, Auth & Infraestrutura",
     technical: [
-      "NestJS avançado — Guards, Interceptors, Pipes, Decorators customizados, exception filters",
-      "Auth: JWT + refresh tokens; OAuth2 (Google login)",
-      "Docker Mastery (Bret Fisher) — secções 1 a 4: imagens, containers, compose",
-      "LeetCode — Two Pointers, Sliding Window, Linked Lists. 1-2/dia"
+      "NestJS Avançado — Guards, Interceptors customizados, Exception filters.",
+      "Auth Híbrida: JWT local + OAuth2 (Google).",
+      "Full Stack Open (Univ. Helsínquia) — Usa como bíblia de referência para práticas CI/CD e testes de integração.",
+      "Docker Mastery (Bret Fisher) — Dominar os volumes e networks isoladas."
     ],
     product: [
-      "Sistema de autenticação completo + estrutura de cursos/lições"
+      "FARO: Sistema de auth completo + Gamificação base (XP, streaks). Pede à IA os melhores algoritmos de retenção."
     ],
-    languages: [],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): JWT from scratch. Usa o módulo nativo 'crypto' do Node.js para assinar um token HMAC-SHA256 manualmente. Nada de bibliotecas npm."
+    ],
+    languages: [
+      "Foco em listening: Palestras de System Design (InfoQ, GOTO Conferences)."
+    ],
     successCriteria: [
-      "Docker Compose com Node+Postgres a correr localmente sem erros",
-      "Sistema de auth completo, testado manualmente com Postman/Insomnia"
+      "Docker Compose com Node+Postgres a correr localmente sem stubs.",
+      "Auth exaustivamente testada manualmente."
     ]
   },
   {
     id: "mes-5",
     month: "MÊS 5",
-    date: "DEZEMBRO 2026",
-    phase: "Core Backend Mastery",
+    date: "JANEIRO 2027",
+    phase: "Resiliência & Data-Intensive",
     technical: [
-      "Testing: Jest unitário, integração, e2e com supertest",
-      "Mastering PostgreSQL 17 (Schönig) — índices GIN/GiST/BRIN, EXPLAIN ANALYZE, transações",
-      "LeetCode — Trees, Recursion. Continuar diário"
+      "Coursera Software Design and Architecture — Entender coesão e acoplamento.",
+      "Mastering PostgreSQL 17 — GIN/GiST/BRIN, e forçar o EXPLAIN ANALYZE em queries da Faro.",
+      "LeetCode: Trees, Recursion. Se encravares, vai ler o módulo correspondente no 'jwasham/coding-interview-university'."
     ],
     product: [
-      "Sistema de exercícios + primeira versão de XP/streaks"
+      "FARO: Implementar o algoritmo SM-2 (Spaced Repetition). Pede ao Cursor para gerar os cálculos complexos baseados no paper original."
     ],
-    languages: [],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Implementa o Padrão 'Circuit Breaker' do zero sem dependências. Código que gere falhas catastróficas em cascatas. Se a BD cai, a API sobrevive e devolve 503 limpo."
+    ],
+    languages: [
+      "Foco em speaking Inglês, gravações de 5 minutos diárias."
+    ],
     successCriteria: [
-      "Cobertura de testes >= 60% no backend da Faro",
-      "1 query lenta identificada e otimizada com EXPLAIN ANALYZE, documentada num commit",
-      "Decisão esperada do FITEC (planeamento com contabilista)"
+      "1 query da Faro otimizada de 100ms para 5ms com EXPLAIN ANALYZE.",
+      "Faro atinge 60% Test Coverage."
     ]
   },
   {
     id: "mes-6",
     month: "MÊS 6",
-    date: "JANEIRO 2027",
-    phase: "Consolidação",
+    date: "FEVEREIRO 2027",
+    phase: "A Invasão do Python (IA Core)",
     technical: [
-      "Self-code-review — relê o teu próprio código como um Staff Engineer o faria",
-      "Designing Data-Intensive Applications (Kleppmann) — Parte I completa",
-      "LeetCode — consolidar padrões de Set-Nov com revisão espaçada"
+      "FastAPI — The Complete Course (Roby & Darby). Monta o microserviço Python.",
+      "Harvard CS50’s Intro to AI with Python — Base teórica de Search, Knowledge e Machine Learning.",
+      "microsoft/generative-ai-for-beginners — Acelera a implementação de RAG e agentes LLM."
     ],
     product: [
-      "Cobertura de testes completa",
-      "Documentação técnica do backend atualizada"
+      "FARO: A IA entra no produto. FastAPI expõe um endpoint `/generate-exercise` que consome a API da OpenAI/Anthropic. Usa o SDK oficial."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Comunicação Inter-processos crua. Node.js (App Principal) envia dados para o script Python local usando raw Sockets TCP/IP. Nada de HTTP, apenas buffers de bytes."
     ],
     languages: [
-      "Meta C1 atingida",
-      "1ª mock interview técnica em inglês, gravada"
+      "Meta C1 atingida em Inglês.",
+      "1ª mock interview técnica em inglês."
     ],
     successCriteria: [
-      "60-80 problemas LeetCode acumulados",
-      "DDIA Parte I lida com notas próprias por capítulo",
-      "Mock interview #1 realizada e revista"
+      "Microserviço FastAPI a responder a pedidos reais do NestJS.",
+      "1 endpoint de IA em produção end-to-end."
     ]
   },
   {
     id: "mes-7",
     month: "MÊS 7",
-    date: "FEVEREIRO 2027",
-    phase: "Escala & IA",
+    date: "MARÇO 2027",
+    phase: "Concorrência, Filas & Modelos Locais",
     technical: [
-      "FastAPI — The Complete Course 2026 (Roby & Darby) — estrutura do microserviço, JWT, SQLAlchemy",
-      "Prompt engineering para geração de conteúdo pedagógico via LLM API",
-      "LeetCode — Graphs (BFS/DFS). 2/dia"
+      "Redis — Pub/Sub e Filas assíncronas (BullMQ).",
+      "Hugging Face NLP Course + Fast.ai — Entender como carregar e usar modelos ML abertos (Llama, Mistral) caso queiramos cortar custos de API.",
+      "GitHub Actions: CI/CD puro."
     ],
     product: [
-      "Microserviço Python/FastAPI funcional, comunicação REST com o NestJS",
-      "Primeira feature de IA: geração automática de exercícios"
+      "FARO: Caching via Redis implementado. Deploy do MVP num VPS (Fly.io ou Render) com CI/CD. IA gera os testes e pipelines iniciais."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Cria um Message Broker artesanal usando EventEmitters nativos do Node. 1 Produtor injeta 10.000 eventos, 3 Consumidores processam em concorrência controlada."
     ],
     languages: [
-      "Francês entra, baixa intensidade (laddering, 15-20min/dia)"
+      "Preparação de vocabulário de System Design e ML em Francês (só por desafio mental)."
     ],
     successCriteria: [
-      "Microserviço FastAPI a responder a pedidos reais do backend NestJS",
-      "1 endpoint de geração de exercícios funcional end-to-end"
+      "Faro live. URL partilhado com testers.",
+      "Modelos open-source testados num Jupyter Notebook (via Fast.ai)."
     ]
   },
   {
     id: "mes-8",
     month: "MÊS 8",
-    date: "MARÇO 2027",
-    phase: "Escala & IA",
+    date: "ABRIL 2027",
+    phase: "SRE & System Design de Peso",
     technical: [
-      "Redis — caching e pub/sub para tarefas assíncronas",
-      "GitHub Actions — CI/CD, build/test/lint automático em cada PR",
-      "DDIA — Parte II: replicação, particionamento, transações",
-      "LeetCode — introdução a Dynamic Programming"
+      "System Design Interview Vol. 1 (Alex Xu) + Canal ByteByteGo. Estuda 2 arquiteturas por semana.",
+      "CMU Database Systems (Aulas Livres) — Entende como um motor de BD processa queries em disco vs memória.",
+      "LeetCode: Graphs. Joga Elevator Saga para treinares lógica algorítmica de eventos."
     ],
     product: [
-      "Deploy em produção (beta fechado) — Railway/Render/Fly.io ou VPS",
-      "Spaced repetition algorithm (tipo SM-2) implementado no microserviço Python"
+      "FARO: Integrar ferramentas de observabilidade (Prometheus/Grafana ou Datadog). Logs estruturados (Winston/Pino)."
     ],
-    languages: [],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Constrói um Rate Limiter 'Token Bucket' no Redis. Garante que os teus endpoints de IA não levam DDoSed e não te gastam o budget da OpenAI."
+    ],
+    languages: [
+      "Falar Francês no aniversário da amiga. (Objetivo Cumprido)."
+    ],
     successCriteria: [
-      "Faro live com URL partilhável",
-      "Pipeline CI verde no GitHub, badge no README"
+      "Rate limiter ativo em produção.",
+      "Métricas da Faro a correr num dashboard em tempo real."
     ]
   },
   {
     id: "mes-9",
     month: "MÊS 9",
-    date: "ABRIL 2027",
-    phase: "System Design a Sério",
+    date: "MAIO 2027",
+    phase: "Mock Interviews & Escalabilidade",
     technical: [
-      "System Design Interview Vol. 1 (Alex Xu) — leitura ativa, 1 capítulo/semana com notas",
-      "LeetCode — 100+ acumulados",
-      "Início de Mock Interviews — 1/semana (Pramp.com ou interviewing.io)"
+      "donnemartin/system-design-primer — Devora os tópicos de CDN, Sharding, Consistent Hashing.",
+      "Início de Mock Interviews — 1/semana (Pramp.com)."
     ],
     product: [
-      "Primeiros testers reais (10-20 pessoas)",
-      "Recolha de métricas de uso básicas"
+      "FARO: Realizar Stress Tests (Artillery / K6). Obrigar o NestJS a gritar com 1000 requests/segundo e analisar os memory leaks."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Cria um Load Balancer simples em Node.js (Round Robin) que distribui pedidos por 3 instâncias locais da tua API."
     ],
     languages: [
-      "Push para C2 — 2ª mock interview técnica, feedback aplicado",
-      "Espanhol entra (laddering, aproveitando proximidade ao português)"
+      "Mock Interviews comportamentais (STAR Method) gravadas."
     ],
     successCriteria: [
-      "100+ LeetCode resolvidos",
-      "1 mock interview de System Design completada",
-      "10+ utilizadores reais a testar a Faro"
+      "Bottlenecks da Faro documentados e isolados.",
+      "Primeira Mock de System Design concluída sem brancas."
     ]
   },
   {
     id: "mes-10",
     month: "MÊS 10",
-    date: "MAIO 2027",
-    phase: "Profissionalização",
+    date: "JUNHO 2027",
+    phase: "Autoridade Técnica",
     technical: [
-      "System Design Interview Vol. 2 (Alex Xu)",
-      "Manutenção de LeetCode + System Design — 2-3 mocks/semana a partir daqui"
+      "System Design Interview Vol. 2 (Alex Xu). Mocks a fundo.",
+      "Revisitar todo o código que a IA gerou na Faro e refatorar onde houver 'code smells'."
     ],
     product: [
-      "GitHub polido — READMEs case-study (problema -> decisão técnica -> resultado)",
-      "3-5 posts técnicos publicados em inglês sobre a jornada da Faro"
+      "FARO: Polimento extremo. A BD e o NestJS têm de aguentar os utilizadores da FITEC.",
+      "Escrever 3 posts de blog técnicos sobre trade-offs (ex: FastAPI vs NestJS para microserviços)."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Vai a um repo Open Source maduro (ex: NestJS, TypeORM) e procura uma issue 'good first issue'. Clona, lê o código (sem IA) e tenta o PR."
     ],
     languages: [
-      "LinkedIn otimizado, publicação regular de conteúdo técnico"
+      "Otimização do LinkedIn, CV ATS-friendly todo em Inglês técnico."
     ],
     successCriteria: [
-      "GitHub com 3+ repositórios pinned, todos com README profissional",
-      "3+ posts técnicos publicados",
-      "Candidaturas a vagas remotas iniciadas"
+      "3+ artigos técnicos de peso publicados.",
+      "Perfil pronto para headhunters B2B da Europa."
     ]
   },
   {
     id: "mes-11",
     month: "MÊS 11",
-    date: "JUNHO 2027",
-    phase: "Job Hunt a Sério",
+    date: "JULHO 2027",
+    phase: "Job Hunt B2B Europeia",
     technical: [
-      "Mock interviews 2-3x/semana, incluindo comportamentais (método STAR) em inglês"
+      "Mock interviews intensivas (2-3/semana).",
+      "Dominar o pitch das decisões arquiteturais da Faro. Ser capaz de desenhar o sistema num quadro branco em 10 minutos."
     ],
     product: [
-      "Refinamento contínuo da Faro com base em feedback de utilizadores reais"
+      "FARO: Correções de UI/UX e lock das features. Preparação para a entrevista da Bolsa FITEC (defesa técnica)."
+    ],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Desenha em papel toda a topologia cloud da Faro se tivesse 1 milhão de DAU (Daily Active Users). Onde pões as queues? Onde fazes sharding do Postgres?"
     ],
     languages: [
-      "Entender o modelo de contrato (Recibos verdes / contrato B2B) - consulta contabilista"
+      "Dominar a linguagem contratual e de negociação salarial."
     ],
     successCriteria: [
-      "8-10 entrevistas técnicas realizadas",
-      "Currículo e carta de apresentação refinados com base em feedback real"
+      "Dezenas de candidaturas a posições Mid-Level remotas.",
+      "Entrevistas reais agendadas."
     ]
   },
   {
     id: "mes-12",
     month: "MÊS 12",
-    date: "JULHO 2027",
-    phase: "Fecho do Ciclo",
+    date: "AGOSTO 2027",
+    phase: "A Batalha Final",
     technical: [
-      "Consolidação total — revisão de tudo o que foi construído nos 12 meses"
+      "Nenhuma tecnologia nova. Apenas afiar o machado. Revisões espaçadas violentas dos tópicos onde falhaste nas mocks."
     ],
     product: [
-      "Decisão consciente: dedicação parcial ou total à Faro pós-verão, com base em tração real"
+      "FARO: Reuniões pós-lançamento, análise de métricas, faturação em andamento."
     ],
-    languages: [],
+    hardModeSaturday: [
+      "PROJETO SÉNIOR (ZERO IA): Descanso absoluto. A tua mente precisa de estar afiada como uma lâmina para as entrevistas decisivas da semana."
+    ],
+    languages: [
+      "Inglês de negócio afiado."
+    ],
     successCriteria: [
-      "Primeira proposta de contrato B2B remoto na mesa",
-      "Retrospetiva completa dos 12 meses escrita"
+      "Proposta contratual B2B remota na mão (> 3500€/mês líquidos).",
+      "FITEC defendido."
     ]
   }
 ];
 
-export const resources = [
-  {
-    category: "TypeScript",
-    items: [
-      { id: "r1", title: "Total TypeScript", author: "Matt Pocock", source: "No Starch Press, 2026" },
-      { id: "r2", title: "Understanding TypeScript", author: "Maximilian Schwarzmüller", source: "Udemy" },
-      { id: "r3", title: "TypeScript Handbook", author: "Equipa TypeScript, Microsoft", source: "Oficial" }
-    ]
-  },
-  {
-    category: "Node.js + NestJS",
-    items: [
-      { id: "r4", title: "Intro to NestJS", author: "Scrimba", source: "grátis, 83 min" },
-      { id: "r5", title: "NestJS: The Complete Developer's Guide", author: "Stephen Grider", source: "Udemy" },
-      { id: "r6", title: "NestJS Zero to Hero", author: "Ariel Weinberger", source: "Udemy" },
-      { id: "r7", title: "freeCodeCamp — NestJS Course", author: "freeCodeCamp", source: "YouTube, grátis" }
-    ]
-  },
-  {
-    category: "PostgreSQL & Databases",
-    items: [
-      { id: "r8", title: "The Art of PostgreSQL", author: "Dimitri Fontaine", source: "Livro" },
-      { id: "r9", title: "Designing Data-Intensive Applications", author: "Martin Kleppmann", source: "Livro" },
-      { id: "r10", title: "Mastering PostgreSQL 17", author: "Hans-Jürgen Schönig", source: "Livro" }
-    ]
-  },
-  {
-    category: "Docker & Infra",
-    items: [
-      { id: "r11", title: "Docker Mastery", author: "Bret Fisher", source: "Udemy" },
-      { id: "r12", title: "Docker & Kubernetes: The Practical Guide", author: "Maximilian Schwarzmüller", source: "Udemy" },
-      { id: "r13", title: "Docker and Kubernetes: The Complete Guide", author: "Stephen Grider", source: "Udemy" }
-    ]
-  },
-  {
-    category: "Python + FastAPI (IA)",
-    items: [
-      { id: "r14", title: "FastAPI — The Complete Course 2026", author: "Eric Roby & Chad Darby", source: "Udemy" },
-      { id: "r15", title: "Documentação oficial FastAPI", author: "Sebastián Ramírez", source: "Oficial" },
-      { id: "r16", title: "Deploying AI into Production with FastAPI", author: "DataCamp", source: "Curso" }
-    ]
-  },
-  {
-    category: "System Design",
-    items: [
-      { id: "r17", title: "System Design Interview, Vol. 1", author: "Alex Xu", source: "Livro" },
-      { id: "r18", title: "System Design Interview, Vol. 2", author: "Alex Xu", source: "Livro" }
-    ]
-  }
-];
 
 export const playbooks = [
   {
+    id: "pedreiro-core",
+    title: "O Manual do Pedreiro (Faro vs. Backend Core)",
+    content: `Regra de Ouro: Nunca mistures a Faro com o Sábado Hard Mode.
+
+FARO (A Empresa & Faturação)
+- A Faro é negócio. O objetivo é enviar para produção o mais rápido possível e obter tração.
+- OBRIGATÓRIO USAR IA (Cursor, ChatGPT, Claude). Usa LLMs para gerar schemas, testes, boilerplate, e layouts React instantâneos.
+- Se a IA o consegue fazer em 3 minutos, não percas 3 horas a codar. Vais ser julgado pelo lucro e pela usabilidade, não pelos ciclos de CPU.
+
+BACKEND CORE (O Engenheiro Sénior)
+- Aqui, a IA é proibida. Desliga o Copilot. Fecha o ChatGPT.
+- Aos Sábados, bates código cru, lês logs de erro vermelhos, consomes documentação oficial e bates com a cabeça na parede. É aqui que ganhas cicatrizes de guerra e intuição de arquitetura.
+- Faz projetos do 'build-your-own-x', usa o Exercism para levares porrada nas code reviews humanas e sofre. Um Sénior é feito na dor do debug.`
+  },
+  {
     id: "deep-work",
     title: "Protocolo de Deep Work",
-    content: `A Regra do Separador Único. Quando estudas backend, só um separador está aberto: a documentação oficial.
-Pomodoro Adaptado — 52+17. 52 minutos de trabalho, 17 de pausa real.
-Bloqueio de Calendário — Não Negociável. 90 minutos de manhã, 90 à tarde/noite.
-Regra dos 30 Dias — Imersão em Inglês. Todo o código, comentários e READMEs em inglês.
-Mock Interviews em Inglês — a partir do Mês 9. Pratica em voz alta, gravando-te.`
+    content: `A Regra do Separador Único. Quando estudas backend ao sábado, só um separador está aberto: a doc oficial.
+Pomodoro Adaptado — 52+17. 52 minutos de foco assassino, 17 de pausa real, sem ecrãs.
+Bloqueio de Calendário — Imutável. A rotina não se negoceia com a motivação.
+Regra dos 30 Dias — Imersão total em Inglês. Tudo em inglês. Pensa em inglês.
+Mock Interviews em Inglês — Fala sozinho a arquitetar soluções, grava, ouve a própria voz e corrige.`
   },
   {
     id: "ia-usage",
-    title: "Como Usar IA",
-    content: `Aprender Conceitos: Pede para explicar um conceito. Não peças a implementação completa.
-Depurar Erros: Descreve o erro e pede explicação das causas. Não coles só o erro.
-Code Review: Pede para apontar problemas de performance ou legibilidade.
-Estares Bloqueado: Pede pistas após 30 minutos bloqueado. Não vejas a solução completa.
-Arquitetura: Debate trade-offs. Não aceites a primeira sugestão cegamente.`
+    title: "Como Usar IA na Faro",
+    content: `Geração: Usa para scaffold rápido de CRUDs NestJS, componentes React e queries complexas para as quais já sabes a resposta lógica.
+Depuração: Se uma query falhar em produção, cola o EXPLAIN ANALYZE no Claude e pede para sugerir índices.
+Limitação: Nunca deixes a IA tomar decisões de arquitetura de base de dados por ti sem fazeres push-back. Exige os trade-offs. Se a IA sugere Redis, pergunta "Porquê não in-memory cache do NestJS primeiro?".`
   },
   {
     id: "stack",
-    title: "O Stack Obrigatório",
-    content: `NÍVEL 1 (Core): TypeScript, Node.js, NestJS, PostgreSQL, Git/GitHub, Docker, Testing (Jest)
-NÍVEL 2 (Fase 3): Python + FastAPI (IA), Redis, System Design, CI/CD (GitHub Actions), OAuth2 / JWT
-NÍVEL 3 (Polimento): GraphQL, Kubernetes, gRPC, Kafka`
-  },
-  {
-    id: "faro-spec",
-    title: "Faro — Especificação Técnica",
-    content: `Funcionalidades Core:
-- Cursos e lições em árvore de progressão.
-- Repetição espaçada (SM-2).
-- XP, streaks e ligas.
-- Geração de exercícios via IA (microserviço Python).
-
-Arquitetura:
-- NestJS monolítico bem modularizado.
-- PostgreSQL (principal), Redis (cache/pubsub).
-- FastAPI isolado para IA via REST interna.
-- Docker Compose, GitHub Actions para CI/CD, deploy inicial simples (Railway/Render/Fly.io).`
+    title: "O Stack Inegociável",
+    content: `CORE LEVEL (Seniority no Node): TypeScript, Node.js puro, NestJS (Framework), PostgreSQL (Single Source of Truth), Docker, Jest.
+AI LEVEL (Escala e IA): Python, FastAPI (Isolamento de CPU para modelos/LLMs), Redis (Pub/Sub e Cache), GitHub Actions (CI/CD).
+THEORY LEVEL (System Design): Balanceamento de carga, Sharding, Replicação, Tolerância a falhas (Circuit Breaker, Rate Limiting, Retry).`
   },
   {
     id: "leetcode",
-    title: "Estratégia LeetCode",
-    content: `Lista: Blind 75 -> NeetCode 150.
-Cadência:
-- T1: Arrays, Strings, HashMaps (1 fácil/dia)
-- T2: Two Pointers, Sliding Window, Linked Lists, Trees (1-2 médios/dia)
-- T3: Graphs, Dynamic Programming (2/dia + mocks semanais)
-- T4: Manutenção + Mocks intensivos
-
-Repetição Espaçada: Revisita a 1 dia, 3 dias, 1 semana e 1 mês.`
-  },
-  {
-    id: "system-design",
-    title: "System Design",
-    content: `Livros: Designing Data-Intensive Applications (DDIA) e System Design Interview (Alex Xu).
-Conceitos a dominar (Trimestre 3): Scalability, CAP theorem, Caching (Redis), Load balancing, Replicação, Sharding, Message queues, CDNs, Rate limiting.
-Prática: Usa a Faro como caso de estudo (ex: "Como escalar streaks para 100 mil utilizadores?").`
-  },
-  {
-    id: "idiomas",
-    title: "Protocolo de Idiomas",
-    content: `Certificação: Cambridge C1 Advanced (CAE) -> C2 Proficiency (CPE).
-Jul-Set 2026: Imersão total + 1ª sessão de conversação.
-Out-Dez 2026: Documentar Faro em inglês + 1ª mock interview técnica.
-Jan-Mar 2027: Inscrição no exame C1 + 2ª mock interview.
-Francês/Espanhol (Laddering): 15-20 min/dia usando português e inglês como base (Francês em Jan 2027, Espanhol em Mar 2027).`
-  },
-  {
-    id: "portfolio",
-    title: "Portfólio & Candidatura",
-    content: `GitHub: 3 a 6 repositórios pinned (Faro no topo, 1-2 exercícios System Design, 1 contribuição open-source). READMEs com: Problema -> Decisão -> Resultado.
-Escrever em Público: 3-5 posts técnicos no Mês 10.
-Estratégia: Referral primeiro. CV de uma página (ATS friendly). Carta de apresentação de 2 parágrafos. Regista todas as candidaturas e faz follow-up após 7 dias.`
+    title: "Estratégia LeetCode & Exercism",
+    content: `Mentalidade: Não faças grind. Faz espaçamento.
+Ferramentas:
+- Blind 75 / NeetCode 150 para identificar os padrões cruciais.
+- Exercism.org para escrever código que vai ser revisto e chumbado por humanos (ideal para limpar vícios e maus cheiros).
+Cadência: Padrões específicos por mês. Revisita a 1 dia, 3 dias, 1 semana e 1 mês.`
   }
 ];
 
 export const goals = [
-  { id: "g1", title: "Duração: 12 meses ininterruptos" },
-  { id: "g2", title: "Papel-Alvo: Founder & Lead Backend Engineer -> Mid-Level Remoto B2B" },
-  { id: "g3", title: "Meta LeetCode: 150+ resolvidos, padrão a padrão" },
-  { id: "g4", title: "Projeto Flagship: Faro — Duolingo + IA" },
-  { id: "g5", title: "Grant em Jogo: FITEC-2026-01 · 30.000€ a fundo perdido" }
+  { id: "g1", title: "Duração: 12 meses ininterruptos (A tua 'Deployment Pipeline' de Vida)" },
+  { id: "g2", title: "Papel-Alvo: Mid-Level Backend Engineer B2B Remoto (Europa)" },
+  { id: "g3", title: "O Projeto: Lançamento da Faro com sucesso de tração e bolsa FITEC de 30.000€" },
+  { id: "g4", title: "Cicatrizes de Batalha: Submeter código open-source e dominar o System Design" }
 ];
 
 export const commandments = [
-  "Não seguirás um tutorial sem depois o reconstruíres de memória.",
-  "Não confundirás saber o nome de uma tecnologia com saber usá-la em produção.",
-  "Lerás o código-fonte da tua dependência antes de perguntares a alguém.",
-  "Não escreverás uma função sem saberes a sua complexidade — tempo e memória.",
-  "Testarás o teu código antes de confiares nele, e confiarás nele antes de o implantares.",
-  "Não deixarás em produção nada que não consigas explicar em 2 minutos, em inglês.",
-  "Documentarás como se o teu 'eu' de daqui a 6 meses fosse um estranho completo.",
-  "Não otimizarás o que não mediste primeiro.",
-  "Descansarás sete a oito horas, pois um cérebro exausto não fixa padrões.",
-  "Falarás, lerás e escreverás em inglês todos os dias — mesmo sozinho, mesmo mal."
+  "Não seguirás um tutorial cego. Destrói-o e reconstrói-o à tua imagem sem olhar.",
+  "Não misturarás o desenvolvimento veloz da Faro (com IA) com a tua forja de Sábado (sem IA).",
+  "Lerás o código-fonte (Node_modules, libs em Rust/Python) antes de perguntares no StackOverflow.",
+  "Não farás deploy de uma query sem leres o EXPLAIN ANALYZE da mesma primeiro.",
+  "Testarás o teu código antes de confiares nele, e confiarás nele antes de escalar.",
+  "Não defenderás uma arquitetura que não consigas desenhar e criticar num quadro branco em 5 minutos.",
+  "Documentarás infraestrutura como código e código como arte.",
+  "Nunca usarás uma ferramenta abstraída (ex: NestJS, TypeORM) sem entenderes o código puro (Node.js, SQL) que ela esconde.",
+  "O sono e o desporto não se tocam. Um engenheiro cansado escreve dívida técnica.",
+  "O Inglês é a tua primeira língua técnica. Falarás e debaterás arquitetura em Inglês sem hesitar."
 ];
+
+export const resources = [
+  {
+    category: "Cursos Práticos & Open Source",
+    items: [
+      { title: "Build Your Own X", author: "codecrafters-io", type: "course" },
+      { title: "Coding Interview University", author: "jwasham", type: "doc" },
+      { title: "System Design Primer", author: "donnemartin", type: "doc" },
+      { title: "Full Stack Open", author: "Univ. Helsínquia", type: "course" }
+    ]
+  },
+  {
+    category: "Inteligência Artificial & Python",
+    items: [
+      { title: "CS50’s Intro to AI with Python", author: "Harvard University", type: "course" },
+      { title: "NLP Course", author: "Hugging Face", type: "course" },
+      { title: "Generative AI for Beginners", author: "Microsoft", type: "course" },
+      { title: "Practical Deep Learning", author: "Fast.ai", type: "course" },
+      { title: "FastAPI — The Complete Course", author: "Roby & Darby • Udemy", type: "course" }
+    ]
+  },
+  {
+    category: "Arquitetura & Bases de Dados",
+    items: [
+      { title: "The Twelve-Factor App", author: "Adam Wiggins", type: "doc" },
+      { title: "ByteByteGo", author: "Alex Xu • YouTube", type: "course" },
+      { title: "Software Design and Architecture", author: "Coursera", type: "course" },
+      { title: "Use The Index Luke", author: "Markus Winand", type: "doc" },
+      { title: "Database Systems", author: "CMU (Carnegie Mellon)", type: "course" },
+      { title: "Designing Data-Intensive Apps", author: "Martin Kleppmann", type: "book" }
+    ]
+  },
+  {
+    category: "TypeScript & Core Backend",
+    items: [
+      { title: "Total TypeScript", author: "Matt Pocock", type: "course" },
+      { title: "NestJS: The Complete Developer's Guide", author: "Stephen Grider", type: "course" },
+      { title: "Clean Architecture", author: "Robert C. Martin", type: "book" }
+    ]
+  },
+  {
+    category: "Jogos Didáticos & Prática",
+    items: [
+      { title: "Exercism (Mentoria Open Source)", author: "Exercism.org", type: "course" },
+      { title: "SQL Murder Mystery", author: "Knight Lab", type: "doc" },
+      { title: "Elevator Saga", author: "Magnus Wolffelt", type: "doc" },
+      { title: "Vim Adventures", author: "Doron Linder", type: "doc" }
+    ]
+  }
+];
+
+export const mentorPrompt = `Atua como um Mentor de Engenharia de Software (Staff/Principal Engineer).
+
+Contexto:
+Sou um estudante de Engenharia Informática e defini um roadmap rigoroso de 12 meses para passar de Júnior a Mid-Level Backend Engineer.
+O meu objetivo final é estar preparado para conseguir um contrato B2B remoto (Europa) e submeter uma candidatura à bolsa FITEC (30.000€).
+
+A minha Filosofia Dual (Inegociável):
+1. A FARO (A Empresa): Construo o meu SaaS de repetição espaçada com IA, o mais rápido possível, USANDO INTELIGÊNCIA ARTIFICIAL ATIVAMENTE para faturar e escalar.
+2. O SÁBADO HARD MODE (O Engenheiro): Progressão hardcore e purista. NÃO USO IA. Bato código, leio RFCs e documentação oficial para solidificar os fundamentos puros da Engenharia Informática.
+
+A minha Stack Base Inegociável: 
+TypeScript, Node.js, NestJS, PostgreSQL, Git, Docker, Jest.
+
+A minha Stack de Fase 3 (Escala & IA): 
+Python + FastAPI (microserviço de IA), Redis, GitHub Actions (CI/CD), System Design.
+
+O meu Protocolo de Deep Work: 
+- 2 blocos de 90min por dia (Pomodoros 52/17). 
+- Alternância entre dias de Teoria (Seg/Qua) e dias de Construção (Ter/Qui). 
+- Sábado: Sábado Hard Mode (Zero IA). 
+- Domingo: Descanso zero-tech.
+
+A Situação Atual (Preenche aqui):
+[ DESCREVE O TEU IMPREVISTO/AVANÇO AQUI. Ex: "Estou no Mês 4, atrasei-me no módulo de Docker porque tive época de exames e agora só tenho 5 horas por semana..." ]
+
+O Pedido:
+Com base nestas restrições e objetivos imutáveis, ajuda-me a reformular o meu plano de ataque para as próximas semanas mantendo a filosofia dual.
+Não mudes a stack tecnológica nem o objetivo final (Mid-Level B2B).
+Quero saber:
+1. Como realoco o tempo que me resta?
+2. O que corto temporariamente do "polimento" ou de prioridade secundária na Faro para salvar a empresa sem prejudicar o Sábado Hard Mode?
+3. Como recupero o ritmo para não falhar os critérios de sucesso estruturais da minha fase atual?`;

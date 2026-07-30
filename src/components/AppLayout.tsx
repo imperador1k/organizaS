@@ -28,6 +28,7 @@ import { isSameDay } from 'date-fns';
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/roadmap', label: 'Roadmap', icon: Map },
+  { href: '/workspace', label: 'Metas', icon: FileText },
   { href: '/goals', label: 'Habits', icon: Target },
   { href: '/todo', label: 'To-Do', icon: ClipboardList },
   { href: '/events', label: 'Events', icon: CalendarDays },
