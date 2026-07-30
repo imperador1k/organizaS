@@ -39,16 +39,17 @@ export const curriculum = [
     id: "mes-1",
     month: "MÊS 1",
     date: "SETEMBRO 2026",
-    phase: "Fundação & Raio-X",
+    phase: "Fundação, Raio-X & Autoridade",
     technical: [
       "TypeScript do zero — Total TypeScript (Matt Pocock). Parte I-III. Código cravado nas unhas.",
       "Entendimento profundo: Generics e Utility Types. Vais usar o 'Understanding TypeScript' (Schwarzmüller).",
       "Git a sério (Sem UI): branches, rebase interactivo, PRs. Se quebrares a árvore, arranja-a pelo terminal.",
-      "Linux/Terminal: Navegação, permissões chmod/chown, processos (kill, htop, grep)."
+      "Inicia a escrita de ADRs (Architecture Decision Records) em Inglês para a Faro. Recrutadores lêem documentação técnica."
     ],
     product: [
       "FARO (Modo Negócio): IA ligada ao máximo. Gera wireframes e schemas base no Cursor/ChatGPT.",
-      "Faro Schema inicial: users, courses, lessons, exercises, progress."
+      "Networking Ativo: Entra no Discord oficial do NestJS e FastAPI. Começa a responder e a fazer perguntas de alto nível.",
+      "Autoridade: Escreve e publica 1 artigo técnico este mês no LinkedIn e Dev.to (ex: 'Why I chose NestJS over Express')."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): Cria um CLI em Node.js puro que leia um TXT e conte palavras. Usa Vim Adventures durante 30 mins para aquecer antes de bater código."
@@ -58,9 +59,9 @@ export const curriculum = [
       "Francês via Language Laddering (a partir do Inglês) - 30m/dia."
     ],
     successCriteria: [
-      "TypeScript Handbook lido de fio a pavio.",
-      "10+ exercícios de Total TypeScript resolvidos sem copiar.",
-      "Constituir empresa e garantir contabilista."
+      "Primeiro ADR da Faro redigido e submetido ao GitHub.",
+      "1 Artigo Técnico publicado.",
+      "10+ exercícios de Total TypeScript resolvidos sem copiar."
     ]
   },
   {
@@ -101,7 +102,8 @@ export const curriculum = [
       "LeetCode arranca hoje. Lista Blind 75 (Arrays, HashMaps). Pratica no Exercism para teres reviews humanas cruéis."
     ],
     product: [
-      "FARO: Migra o código Express para NestJS usando IA para acelerar o boilerplate. Mantém foco em faturar e evoluir o modelo de dados."
+      "FARO: Migra o código Express para NestJS usando IA para acelerar o boilerplate. Mantém foco em faturar e evoluir o modelo de dados.",
+      "Escreve o teu segundo artigo técnico: 'Dependency Injection in NestJS: A mental model'."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): Cria um mini-ORM em TS. Pegas num objeto { name: 'X' } e devolves 'INSERT INTO users...'. Depois, vai jogar SQL Murder Mystery para descontrair a mente com joins."
@@ -119,15 +121,15 @@ export const curriculum = [
     id: "mes-4",
     month: "MÊS 4",
     date: "DEZEMBRO 2026",
-    phase: "Segurança, Auth & Infraestrutura",
+    phase: "Segurança, IaC & Infraestrutura Real",
     technical: [
       "NestJS Avançado — Guards, Interceptors customizados, Exception filters.",
-      "Auth Híbrida: JWT local + OAuth2 (Google).",
-      "Full Stack Open (Univ. Helsínquia) — Usa como bíblia de referência para práticas CI/CD e testes de integração.",
+      "Segurança Web Real: Domina o OWASP Top 10, Security Headers (Helmet), Rate Limiting, Input Validation extrema (Zod).",
+      "Infraestrutura como Código (IaC): Terraform base. Escreve scripts para provisionar redes e servidores.",
       "Docker Mastery (Bret Fisher) — Dominar os volumes e networks isoladas."
     ],
     product: [
-      "FARO: Sistema de auth completo + Gamificação base (XP, streaks). Pede à IA os melhores algoritmos de retenção."
+      "FARO: Sistema de auth JWT + OAuth2 completo. Pede à IA testes pesados de segurança contra endpoints críticos."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): JWT from scratch. Usa o módulo nativo 'crypto' do Node.js para assinar um token HMAC-SHA256 manualmente. Nada de bibliotecas npm."
@@ -137,7 +139,7 @@ export const curriculum = [
     ],
     successCriteria: [
       "Docker Compose com Node+Postgres a correr localmente sem stubs.",
-      "Auth exaustivamente testada manualmente."
+      "Provisionamento básico de infra num cloud provider via Terraform testado localmente."
     ]
   },
   {
@@ -193,38 +195,38 @@ export const curriculum = [
     id: "mes-7",
     month: "MÊS 7",
     date: "MARÇO 2027",
-    phase: "Concorrência, Filas & Modelos Locais",
+    phase: "Deploy Pro & AWS Foundation",
     technical: [
-      "Redis — Pub/Sub e Filas assíncronas (BullMQ).",
-      "Hugging Face NLP Course + Fast.ai — Entender como carregar e usar modelos ML abertos (Llama, Mistral) caso queiramos cortar custos de API.",
-      "GitHub Actions: CI/CD puro."
+      "AWS Deep Dive (Arquitetura, não certificação teórica): ECS/Fargate para containers, RDS para Postgres, S3 para assets.",
+      "GitHub Actions Avançado: Cria workflows de CI/CD para testar, fazer build do Docker e lançar no ECR/ECS.",
+      "Redis — Pub/Sub e Filas assíncronas (BullMQ)."
     ],
     product: [
-      "FARO: Caching via Redis implementado. Deploy do MVP num VPS (Fly.io ou Render) com CI/CD. IA gera os testes e pipelines iniciais."
+      "FARO: Deploy REAL na AWS (ECS/Fargate, RDS, S3). Nada de 'PaaS' mágicos como Heroku/Render nesta fase. 100% automatizado por GitHub Actions."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): Cria um Message Broker artesanal usando EventEmitters nativos do Node. 1 Produtor injeta 10.000 eventos, 3 Consumidores processam em concorrência controlada."
     ],
     languages: [
-      "Preparação de vocabulário de System Design e ML em Francês (só por desafio mental)."
+      "Preparação de vocabulário de System Design e AWS em Francês (só por desafio mental)."
     ],
     successCriteria: [
-      "Faro live. URL partilhado com testers.",
-      "Modelos open-source testados num Jupyter Notebook (via Fast.ai)."
+      "Deploy da Faro na AWS a 100% com zero downtime no pipeline.",
+      "Rede fechada e segura (VPC, Security Groups)."
     ]
   },
   {
     id: "mes-8",
     month: "MÊS 8",
     date: "ABRIL 2027",
-    phase: "SRE & System Design de Peso",
+    phase: "Observabilidade SRE & O Santo Graal",
     technical: [
-      "System Design Interview Vol. 1 (Alex Xu) + Canal ByteByteGo. Estuda 2 arquiteturas por semana.",
-      "CMU Database Systems (Aulas Livres) — Entende como um motor de BD processa queries em disco vs memória.",
-      "LeetCode: Graphs. Joga Elevator Saga para treinares lógica algorítmica de eventos."
+      "O Santo Graal da Produção: OpenTelemetry distribuído entre o NestJS e o FastAPI.",
+      "Prometheus & Grafana para scraping e dashboards de métricas.",
+      "Literacia K8s: Minikube apenas para perceber pods e deployments (sem stress de produção)."
     ],
     product: [
-      "FARO: Integrar ferramentas de observabilidade (Prometheus/Grafana ou Datadog). Logs estruturados (Winston/Pino)."
+      "FARO: Criar uma página pública de status/observability (status.faro.app) para mostrar métricas ao vivo. Recrutadores US/UK adoram 'production readiness'."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): Constrói um Rate Limiter 'Token Bucket' no Redis. Garante que os teus endpoints de IA não levam DDoSed e não te gastam o budget da OpenAI."
@@ -233,21 +235,22 @@ export const curriculum = [
       "Falar Francês no aniversário da amiga. (Objetivo Cumprido)."
     ],
     successCriteria: [
-      "Rate limiter ativo em produção.",
-      "Métricas da Faro a correr num dashboard em tempo real."
+      "Dashboard Grafana ao vivo com métricas (CPU, Memory, Request Time).",
+      "Tracing distribuído a funcionar entre a API e a IA."
     ]
   },
   {
     id: "mes-9",
     month: "MÊS 9",
     date: "MAIO 2027",
-    phase: "Mock Interviews & Escalabilidade",
+    phase: "System Design & Escalabilidade",
     technical: [
+      "System Design Interview Vol. 1 (Alex Xu) + Canal ByteByteGo. Estuda 2 arquiteturas por semana.",
       "donnemartin/system-design-primer — Devora os tópicos de CDN, Sharding, Consistent Hashing.",
       "Início de Mock Interviews — 1/semana (Pramp.com)."
     ],
     product: [
-      "FARO: Realizar Stress Tests (Artillery / K6). Obrigar o NestJS a gritar com 1000 requests/segundo e analisar os memory leaks."
+      "FARO: Realizar Stress Tests (Artillery / K6). Obrigar a AWS a gritar com 1000 requests/segundo e analisar bottlenecks no teu Grafana público."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): Cria um Load Balancer simples em Node.js (Round Robin) que distribui pedidos por 3 instâncias locais da tua API."
@@ -256,7 +259,7 @@ export const curriculum = [
       "Mock Interviews comportamentais (STAR Method) gravadas."
     ],
     successCriteria: [
-      "Bottlenecks da Faro documentados e isolados.",
+      "Bottlenecks da Faro sob stress isolados visivelmente no OpenTelemetry.",
       "Primeira Mock de System Design concluída sem brancas."
     ]
   },
@@ -264,47 +267,47 @@ export const curriculum = [
     id: "mes-10",
     month: "MÊS 10",
     date: "JUNHO 2027",
-    phase: "Autoridade Técnica",
+    phase: "A Caçada B2B - Estratégia Sniper",
     technical: [
       "System Design Interview Vol. 2 (Alex Xu). Mocks a fundo.",
-      "Revisitar todo o código que a IA gerou na Faro e refatorar onde houver 'code smells'."
+      "Revisitar todo o código gerado na Faro e limpar 'code smells'."
     ],
     product: [
-      "FARO: Polimento extremo. A BD e o NestJS têm de aguentar os utilizadores da FITEC.",
-      "Escrever 3 posts de blog técnicos sobre trade-offs (ex: FastAPI vs NestJS para microserviços)."
+      "Caça de Contratos: Ignora plataformas genéricas de 'corridas para o fundo' (Toptal, Turing, Upwork).",
+      "Foco Sniper: Wellfound (AngelList), Otta e YC (Work at a Startup). Pesquisa focada em empresas Series A/B que usem NestJS ou TypeScript pesado no backend."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): Vai a um repo Open Source maduro (ex: NestJS, TypeORM) e procura uma issue 'good first issue'. Clona, lê o código (sem IA) e tenta o PR."
     ],
     languages: [
-      "Otimização do LinkedIn, CV ATS-friendly todo em Inglês técnico."
+      "Outreach Direto: Abordar CTOs no LinkedIn com o teu portfólio de Produção (Dashboard Faro, ADRs públicos, Blog Técnico)."
     ],
     successCriteria: [
-      "3+ artigos técnicos de peso publicados.",
-      "Perfil pronto para headhunters B2B da Europa."
+      "Top 10 Empresas-Alvo identificadas e founders abordados.",
+      "Perfil Wellfound e Otta impecável (100% preenchido)."
     ]
   },
   {
     id: "mes-11",
     month: "MÊS 11",
     date: "JULHO 2027",
-    phase: "Job Hunt B2B Europeia",
+    phase: "Negociação B2B & Legal",
     technical: [
       "Mock interviews intensivas (2-3/semana).",
-      "Dominar o pitch das decisões arquiteturais da Faro. Ser capaz de desenhar o sistema num quadro branco em 10 minutos."
+      "Dominar o pitch das decisões arquiteturais da Faro. Desenhar o AWS ECS/RDS no quadro branco em 5 mins."
     ],
     product: [
-      "FARO: Correções de UI/UX e lock das features. Preparação para a entrevista da Bolsa FITEC (defesa técnica)."
+      "Estratégia Legal B2B: Foco exclusivo em contratos project-based curtos (3-6 meses) numa fase inicial. Isto protege a tua Lda face à EU Platform Work Directive (evitando a presunção de falso emprego)."
     ],
     hardModeSaturday: [
-      "PROJETO SÉNIOR (ZERO IA): Desenha em papel toda a topologia cloud da Faro se tivesse 1 milhão de DAU (Daily Active Users). Onde pões as queues? Onde fazes sharding do Postgres?"
+      "PROJETO SÉNIOR (ZERO IA): Desenha em papel toda a topologia cloud da Faro se tivesse 1 milhão de DAU. Onde pões as queues? Onde fazes sharding do Postgres?"
     ],
     languages: [
-      "Dominar a linguagem contratual e de negociação salarial."
+      "Dominar a linguagem contratual B2B, liability clauses, e negociação salarial B2B."
     ],
     successCriteria: [
-      "Dezenas de candidaturas a posições Mid-Level remotas.",
-      "Entrevistas reais agendadas."
+      "Dezenas de propostas 'project-based' em negociação direta.",
+      "Contabilista valida a viabilidade e risco da EU Directive."
     ]
   },
   {
@@ -316,7 +319,7 @@ export const curriculum = [
       "Nenhuma tecnologia nova. Apenas afiar o machado. Revisões espaçadas violentas dos tópicos onde falhaste nas mocks."
     ],
     product: [
-      "FARO: Reuniões pós-lançamento, análise de métricas, faturação em andamento."
+      "FARO: Reuniões pós-lançamento, análise de métricas no Grafana, faturação real a entrar."
     ],
     hardModeSaturday: [
       "PROJETO SÉNIOR (ZERO IA): Descanso absoluto. A tua mente precisa de estar afiada como uma lâmina para as entrevistas decisivas da semana."
@@ -325,14 +328,28 @@ export const curriculum = [
       "Inglês de negócio afiado."
     ],
     successCriteria: [
-      "Proposta contratual B2B remota na mão (> 3500€/mês líquidos).",
-      "FITEC defendido."
+      "1º Contrato B2B remoto (US/UK) faturado (> 3500€/mês líquidos) via Lda.",
+      "Bolsa FITEC ganha e justificada."
     ]
   }
 ];
 
 
 export const playbooks = [
+  {
+    id: "operacao-producao-b2b",
+    title: "Operação de Produção & Mindset B2B",
+    content: `A Regra Base: Um Contractor B2B vende "Zero Risco". As empresas UK/US não querem estagiários glorificados, querem "Problemas Resolvidos As a Service".
+    
+Provas de Produção OBRIGATÓRIAS:
+- ADRs (Architecture Decision Records) visíveis publicamente: "Porque é que escolhi o Postgres em vez do Mongo?".
+- Observabilidade Extrema: O teu Dashboard do Grafana público é a tua maior carta de recomendação. Mostra que sabes quando a DB falha antes do utilizador.
+- Mentalidade de Segurança Integrada (OWASP Top 10) em cada PR.
+
+Estratégia Legal e de Caça:
+- Plataformas Alvo: Otta, Wellfound, YC Work at a Startup. Zero Fiverr ou Upwork.
+- EU Platform Work Directive: Foge do "falso emprego". Apresenta propostas de 'Service Level Agreements' (SLAs) baseados em projeto ou milestone, idealmente assinando 2-3 contratos simultâneos ou sequenciais rápidos. Tu não "vais trabalhar para eles", a tua Lda vai "fornecer serviços de engenharia".`
+  },
   {
     id: "pedreiro-core",
     title: "O Manual do Pedreiro (Faro vs. Backend Core)",
@@ -384,9 +401,10 @@ Cadência: Padrões específicos por mês. Revisita a 1 dia, 3 dias, 1 semana e 
 
 export const goals = [
   { id: "g1", title: "Duração: 12 meses ininterruptos (A tua 'Deployment Pipeline' de Vida)" },
-  { id: "g2", title: "Papel-Alvo: Mid-Level Backend Engineer B2B Remoto (Europa)" },
-  { id: "g3", title: "O Projeto: Lançamento da Faro com sucesso de tração e bolsa FITEC de 30.000€" },
-  { id: "g4", title: "Cicatrizes de Batalha: Submeter código open-source e dominar o System Design" }
+  { id: "g2", title: "Papel-Alvo: Mid-Level Backend Engineer B2B Remoto (US/UK via Lda)" },
+  { id: "g3", title: "Prova de Autonomia: Ter a Faro com utilizadores reais (mesmo que apenas 50) e um Dashboard Público de Observabilidade" },
+  { id: "g4", title: "O Projeto: Lançamento comercial da Faro com sucesso de tração e bolsa FITEC de 30.000€" },
+  { id: "g5", title: "Cicatrizes de Batalha: Submeter código open-source e dominar o System Design B2B" }
 ];
 
 export const commandments = [
@@ -394,12 +412,12 @@ export const commandments = [
   "Não misturarás o desenvolvimento veloz da Faro (com IA) com a tua forja de Sábado (sem IA).",
   "Lerás o código-fonte (Node_modules, libs em Rust/Python) antes de perguntares no StackOverflow.",
   "Não farás deploy de uma query sem leres o EXPLAIN ANALYZE da mesma primeiro.",
-  "Testarás o teu código antes de confiares nele, e confiarás nele antes de escalar.",
+  "Testarás o teu código antes de confiares nele, e provarás num Dashboard Público antes de o venderes a um recrutador.",
   "Não defenderás uma arquitetura que não consigas desenhar e criticar num quadro branco em 5 minutos.",
-  "Documentarás infraestrutura como código e código como arte.",
-  "Nunca usarás uma ferramenta abstraída (ex: NestJS, TypeORM) sem entenderes o código puro (Node.js, SQL) que ela esconde.",
+  "Documentarás infraestrutura como código (Terraform) e decisões de arquitetura como ADRs públicos.",
+  "Nunca usarás uma ferramenta abstraída sem entenderes o código puro (Node.js, SQL) que ela esconde.",
   "O sono e o desporto não se tocam. Um engenheiro cansado escreve dívida técnica.",
-  "O Inglês é a tua primeira língua técnica. Falarás e debaterás arquitetura em Inglês sem hesitar."
+  "O Inglês é a tua primeira língua técnica. Venderás a tua infraestrutura em Inglês sem hesitar."
 ];
 
 export const resources = [
@@ -423,14 +441,22 @@ export const resources = [
     ]
   },
   {
-    category: "Arquitetura & Bases de Dados",
+    category: "Arquitetura, Infra & BDs",
     items: [
+      { title: "Terraform (IaC)", author: "HashiCorp Docs & Cursos", type: "doc" },
       { title: "The Twelve-Factor App", author: "Adam Wiggins", type: "doc" },
       { title: "ByteByteGo", author: "Alex Xu • YouTube", type: "course" },
       { title: "Software Design and Architecture", author: "Coursera", type: "course" },
       { title: "Use The Index Luke", author: "Markus Winand", type: "doc" },
       { title: "Database Systems", author: "CMU (Carnegie Mellon)", type: "course" },
       { title: "Designing Data-Intensive Apps", author: "Martin Kleppmann", type: "book" }
+    ]
+  },
+  {
+    category: "Observabilidade & SRE",
+    items: [
+      { title: "OpenTelemetry Labs", author: "OpenTelemetry.io", type: "doc" },
+      { title: "Prometheus & Grafana Masterclass", author: "Udemy", type: "course" }
     ]
   },
   {
@@ -452,35 +478,32 @@ export const resources = [
   }
 ];
 
-export const mentorPrompt = `Atua como um Mentor de Engenharia de Software (Staff/Principal Engineer).
+export const mentorPrompt = `Atua como um Mentor de Engenharia de Software (Staff/Principal Engineer) no mercado de UK/US.
 
 Contexto:
-Sou um estudante de Engenharia Informática e defini um roadmap rigoroso de 12 meses para passar de Júnior a Mid-Level Backend Engineer.
-O meu objetivo final é estar preparado para conseguir um contrato B2B remoto (Europa) e submeter uma candidatura à bolsa FITEC (30.000€).
+Sou um estudante de Engenharia Informática e defini um roadmap rigoroso de 12 meses para passar de Júnior a Mid-Level Backend Engineer de elite.
+O meu objetivo final é assegurar contratos B2B remotos project-based para os EUA/Reino Unido (rate piso 3-5k€/mês) operando através da minha empresa unipessoal, mantendo total proteção face à EU Platform Work Directive.
 
 A minha Filosofia Dual (Inegociável):
-1. A FARO (A Empresa): Construo o meu SaaS de repetição espaçada com IA, o mais rápido possível, USANDO INTELIGÊNCIA ARTIFICIAL ATIVAMENTE para faturar e escalar.
-2. O SÁBADO HARD MODE (O Engenheiro): Progressão hardcore e purista. NÃO USO IA. Bato código, leio RFCs e documentação oficial para solidificar os fundamentos puros da Engenharia Informática.
+1. A FARO (A Empresa): Construo o meu SaaS com IA. O foco é faturar, criar um portfólio de "Produção Real" (ADRs públicos, AWS ECS, Grafana Dashboards) e USAR IA ATIVAMENTE para escalar rápido.
+2. O SÁBADO HARD MODE (O Engenheiro): Aos sábados a IA é desligada. Construo do zero, sofro a debugar, compreendo os protocolos de rede, memory leaks, e estrutura de dados à antiga.
 
-A minha Stack Base Inegociável: 
-TypeScript, Node.js, NestJS, PostgreSQL, Git, Docker, Jest.
-
-A minha Stack de Fase 3 (Escala & IA): 
-Python + FastAPI (microserviço de IA), Redis, GitHub Actions (CI/CD), System Design.
+A minha Stack de Contratação (Zero Risco):
+TypeScript, Node.js, NestJS, PostgreSQL, Terraform (IaC), AWS (Fargate, RDS), OpenTelemetry (Grafana/Prometheus).
 
 O meu Protocolo de Deep Work: 
 - 2 blocos de 90min por dia (Pomodoros 52/17). 
 - Alternância entre dias de Teoria (Seg/Qua) e dias de Construção (Ter/Qui). 
 - Sábado: Sábado Hard Mode (Zero IA). 
-- Domingo: Descanso zero-tech.
+- Domingo: Descanso absoluto.
 
 A Situação Atual (Preenche aqui):
-[ DESCREVE O TEU IMPREVISTO/AVANÇO AQUI. Ex: "Estou no Mês 4, atrasei-me no módulo de Docker porque tive época de exames e agora só tenho 5 horas por semana..." ]
+[ DESCREVE O TEU IMPREVISTO/AVANÇO AQUI. Ex: "Estou no Mês 7, a pipeline do GitHub Actions para a AWS está a falhar por permissões de IAM..." ]
 
 O Pedido:
-Com base nestas restrições e objetivos imutáveis, ajuda-me a reformular o meu plano de ataque para as próximas semanas mantendo a filosofia dual.
-Não mudes a stack tecnológica nem o objetivo final (Mid-Level B2B).
+Com base nestas regras puristas, ajuda-me a desatar este nó garantindo que as minhas decisões refletem Seniority (Tolerância a Falhas, Segurança e Observabilidade).
+Não quero soluções mágicas de PaaS (evita sugerir Vercel ou Render se eu estou focado em AWS).
 Quero saber:
-1. Como realoco o tempo que me resta?
-2. O que corto temporariamente do "polimento" ou de prioridade secundária na Faro para salvar a empresa sem prejudicar o Sábado Hard Mode?
-3. Como recupero o ritmo para não falhar os critérios de sucesso estruturais da minha fase atual?`;
+1. Qual é o risco arquitetural ou de segurança da solução que eu estava a tentar fazer?
+2. Como um Staff Engineer americano resolveria isto de forma a que fosse perfeitamente escalável e monitorizável?
+3. O que tenho de ler ou estudar agora mesmo para interiorizar este conceito?`;
