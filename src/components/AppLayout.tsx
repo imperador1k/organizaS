@@ -15,7 +15,8 @@ import {
   FileText,
   Inbox,
   MoreHorizontal,
-  Map
+  Map,
+  Briefcase
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -28,6 +29,7 @@ import { isSameDay } from 'date-fns';
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/roadmap', label: 'Roadmap', icon: Map },
+  { href: '/business', label: 'Lda.', icon: Briefcase },
   { href: '/workspace', label: 'Metas', icon: FileText },
   { href: '/goals', label: 'Habits', icon: Target },
   { href: '/todo', label: 'To-Do', icon: ClipboardList },

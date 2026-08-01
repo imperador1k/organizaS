@@ -90,6 +90,7 @@ export type UserProfile = {
     email: string;
     displayName?: string;
     photoURL?: string;
+    businessChecklist?: Record<string, boolean>;
 };
 
 // Type for items displayed on the schedule page

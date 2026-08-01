@@ -39,7 +39,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   login: (credentials: { email: string; password: string }, rememberMe?: boolean) => Promise<{ success: boolean; user?: User; error?: string }>;
   signup: (credentials: { email: string; password: string; displayName?: string }, rememberMe?: boolean) => Promise<{ success: boolean; user?: User; error?: string }>;
-  updateUserProfile: (data: { displayName?: string, photoURL?: string }) => Promise<void>;
+  updateUserProfile: (data: { displayName?: string, photoURL?: string, businessChecklist?: Record<string, boolean> }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -273,7 +273,7 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     await persistentAuth.logout();
   }, [persistentAuth]);
 
- const updateUserProfile = useCallback(async (data: { displayName?: string, photoURL?: string }) => {
+ const updateUserProfile = useCallback(async (data: { displayName?: string, photoURL?: string, businessChecklist?: Record<string, boolean> }) => {
     if (!user) {
       console.error('No user found for profile update');
       return Promise.resolve();
@@ -282,7 +282,7 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     console.log('Updating user profile with data:', data);
     console.log('Current userProfile:', userProfile);
 
-    const profileUpdates: { displayName?: string, photoURL?: string } = {};
+    const profileUpdates: { displayName?: string, photoURL?: string, businessChecklist?: Record<string, boolean> } = {};
 
     // Handle photo upload - skip if data URL is too long
     if (data.photoURL && data.photoURL !== userProfile?.photoURL) {
@@ -312,6 +312,10 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
 
     if (data.displayName && data.displayName !== userProfile?.displayName) {
         profileUpdates.displayName = data.displayName;
+    }
+
+    if (data.businessChecklist !== undefined) {
+        profileUpdates.businessChecklist = data.businessChecklist;
     }
 
     console.log('Profile updates to apply:', profileUpdates);
