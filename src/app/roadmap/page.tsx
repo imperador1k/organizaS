@@ -9,6 +9,7 @@ import { CheckCircle2, Target, BookOpen, AlertCircle, Code2, Globe, Clock, Libra
 import { Button } from '@/components/ui/button';
 
 import { AppLayout } from '@/components/AppLayout';
+import { RoutineManager } from '@/components/roadmap/RoutineManager';
 
 export default function RoadmapPage() {
   const [activeTab, setActiveTab] = useState('timeline');
@@ -120,39 +121,7 @@ export default function RoadmapPage() {
           </TabsContent>
 
           <TabsContent value="rotina" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {dayKeys.map(day => (
-                <Card key={day} className="border-primary/10">
-                  <CardHeader className="bg-secondary/30 pb-4">
-                    <CardTitle className="text-lg flex items-center justify-between">
-                      {day}
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <div className="space-y-4">
-                      {baseRoutine[day].map(block => (
-                        <div key={block.id} className="flex gap-3 relative">
-                          <div className="flex flex-col items-center">
-                            <span className="text-xs font-bold text-primary w-10 text-right">{block.slot}</span>
-                            <div className="w-px h-full bg-border my-1" />
-                          </div>
-                          <div className="flex-1 pb-4">
-                            <div className="bg-secondary/50 rounded-md p-2.5 border border-border/50">
-                              <div className="flex justify-between items-start mb-1">
-                                <span className="text-sm font-semibold text-foreground">{block.title}</span>
-                                <Badge variant="outline" className="text-[10px] uppercase tracking-wider">{block.category}</Badge>
-                              </div>
-                              <span className="text-xs text-muted-foreground">{block.duration}h</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <RoutineManager />
           </TabsContent>
 
           <TabsContent value="manifesto" className="space-y-6">
